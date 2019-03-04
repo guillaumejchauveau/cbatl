@@ -2,11 +2,14 @@ language: minimal
 install: true
 
 jdk:
-  - openjdk11
+  - openjdk8
 
 git:
   depth: 3
   quiet: true
+
+addons:
+  ssh_known_hosts: gw.info.unicaen.fr
 
 stages:
   - build
@@ -36,3 +39,6 @@ jobs:
         - git remote add master_uplink ssh://git@github.com/$TRAVIS_REPO_SLUG.git
         - git push master_uplink dmz:master
         - git remote remove master_uplink
+
+after_success:
+  - if [[ $TRAVIS_EVENT_TYPE == "cron" ]]; then ssh $FORGE_SYNC || true; fi
