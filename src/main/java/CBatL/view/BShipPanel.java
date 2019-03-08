@@ -1,5 +1,6 @@
 package CBatL.view;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -11,14 +12,19 @@ public class BShipPanel extends JPanel
   private int height;
   private JPanel gridP1;
   private JPanel gridP2;
+  private JPanel boatBoard;
 
   public BShipPanel (int w, int h)
   {
     this.width = w;
     this.height = h;
     this.init();
+    this.initBoard();
   }
 
+  /**
+   * Initialize the main Panel
+   */
   private final void init ()
   {
     this.gridP1 = new JPanel();
@@ -48,7 +54,7 @@ public class BShipPanel extends JPanel
         Case button;
         if(i == 0)
         {
-          button = new Case();
+          button = new Case(i, j);
           String text;
           if(j == 0)
           {
@@ -59,16 +65,22 @@ public class BShipPanel extends JPanel
           button.setText(text);
           button.setEnabled(false);
         }else if (j == 0) {
-          button = new Case();
+          button = new Case(i, j);
           button.setText("" + i);
           button.setEnabled(false);
         } else {
-          button = new Case();
+          button = new Case(i, j);
           button.addActionListener(new ShipController(button));
         }
 
         grid.add(button);
       }
     }
+  }
+
+  private void initBoard ()
+  {
+    this.boatBoard = new JPanel();
+    this.add(this.boatBoard);
   }
 }

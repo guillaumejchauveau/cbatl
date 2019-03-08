@@ -17,5 +17,6 @@ public class ShipController implements ActionListener {
     System.out.println("Button clicked");
     this.c.setBackground(Color.RED);
     this.c.setEnabled(false);
+    System.out.println(this.c.getRow() + ", " + this.c.getCol());
   }
 }
