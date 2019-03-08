@@ -19,7 +19,7 @@ public class App {
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     BShipPanel bShipP = new BShipPanel(10, 10);
 
-    frame.setSize(500, 300);
+    frame.setSize(700, 400);
     frame.setContentPane(bShipP);
     frame.setVisible(true);
   }
