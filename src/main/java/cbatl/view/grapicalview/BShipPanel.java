@@ -1,4 +1,4 @@
-package CBatL.view;
+package cbatl.view.graphicalview;
 
 import javax.swing.*;
 import javax.swing.border.Border;
