@@ -31,7 +31,6 @@ public class TerminalView{
       }
       s1.append(System.lineSeparator());
     }
-    System.out.println(s1);
 
     StringBuilder s2 = new StringBuilder(s1.toString());
     this.s1 = s1;
@@ -74,6 +73,12 @@ public class TerminalView{
     }
   }
 
+  public void insert(int x, char c, int table)
+  {
+    int y = Character.getNumericValue(c) - 9;
+    this.insert(x, y, table);
+  }
+
   @Override
   public String toString()
   {
@@ -88,8 +93,7 @@ public class TerminalView{
   public static void main(String[] arg)
   {
     TerminalView t1 = new TerminalView(7); // -> 7 de length;
-    t1.insert(2,4, 0);
-    System.out.println(t1.s1);
+    t1.insert(2, 'G', 0);
     System.out.println(t1);
   }
 }
