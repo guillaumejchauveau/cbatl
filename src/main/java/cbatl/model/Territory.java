@@ -1,0 +1,57 @@
+package cbatl.model;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class Territory {
+  private Point endPoint;
+  private Collection<Boat> boats;
+  private List<Point> receivedShots;
+
+  public Territory(Point endPoint) {
+    this.endPoint = endPoint;
+    this.boats = new ArrayList<>();
+    this.receivedShots = new ArrayList<>();
+  }
+
+  public Boolean isPointInTerritory(Point point) {
+    return 0 <= point.x && point.x <= this.endPoint.x
+      && 0 <= point.y && point.y <= this.endPoint.y;
+  }
+
+  public Collection<Boat> getBoats() {
+    return this.boats;
+  }
+
+  public List<Point> getReceivedShots() {
+    return this.receivedShots;
+  }
+
+  public void addBoat(Boat boat) {
+    if (
+      !this.isPointInTerritory(boat.getHead()) ||
+        !this.isPointInTerritory(boat.translateSectionToPoint(boat.getLength() - 1))
+    ) {
+      throw new IllegalArgumentException("Boat is not in territory");
+    }
+    this.boats.add(boat);
+  }
+
+  public Boat receiveShot(Point shot) {
+    if (!this.isPointInTerritory(shot)) {
+      throw new IllegalArgumentException("Shot is not in territory");
+    }
+
+    for (Boat boat : this.getBoats()) {
+      for (Point sectionPoint : boat.getSectionsPoints()) {
+        if (sectionPoint.equals(shot)) {
+          boat.addShotSection(boat.translatePointToSection(sectionPoint));
+          return boat;
+        }
+      }
+    }
+    this.receivedShots.add(shot);
+    return null;
+  }
+}
