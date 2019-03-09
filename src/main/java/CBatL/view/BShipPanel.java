@@ -8,18 +8,48 @@ import java.awt.*;
 
 public class BShipPanel extends JPanel
 {
+  private JFrame frame;
   private int width;
   private int height;
   private JPanel gridP1;
   private JPanel gridP2;
   private JPanel boatBoard;
+  private JMenuBar menuBar;
+  private JMenu fileMenu;
+  private JMenu helpMenu;
+  private JMenuItem replay;
+  private JMenuItem quit;
 
-  public BShipPanel (int w, int h)
+  public BShipPanel (JFrame frame, int w, int h)
   {
+    this.frame = frame;
     this.width = w;
     this.height = h;
+    this.initMenu();
     this.init();
     this.initBoard();
+  }
+
+  /**
+   * Initialize the MenuBar of the Jframe passed in constructor
+   */
+  private final void initMenu ()
+  {
+    this.menuBar = new JMenuBar();
+
+    this.fileMenu = new JMenu("File");
+    this.helpMenu = new JMenu("Help");
+
+    this.replay = new JMenuItem("Replay");
+    this.quit = new JMenuItem("Quit");
+
+    this.fileMenu.add(this.replay);
+    this.fileMenu.add(this.quit);
+
+    this.menuBar.add(this.fileMenu);
+    this.menuBar.add(this.helpMenu);
+
+    this.frame.setJMenuBar(this.menuBar);
   }
 
   /**
@@ -78,8 +108,7 @@ public class BShipPanel extends JPanel
     }
   }
 
-  private void initBoard ()
-  {
+  private void initBoard () {
     this.boatBoard = new JPanel();
     this.add(this.boatBoard);
   }

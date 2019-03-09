@@ -17,7 +17,7 @@ public class App {
     JFrame frame = new JFrame();
     frame.setTitle("BattleShip");
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    BShipPanel bShipP = new BShipPanel(10, 10);
+    BShipPanel bShipP = new BShipPanel(frame, 10, 10);
 
     frame.setSize(900, 400);
     frame.setContentPane(bShipP);
