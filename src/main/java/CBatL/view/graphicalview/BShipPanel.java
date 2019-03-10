@@ -30,6 +30,26 @@ public class BShipPanel extends JPanel
     this.initBoard();
   }
 
+  public final int getWidth ()
+  {
+    return this.width;
+  }
+
+  public final void setWidth (int newWidth)
+  {
+    this.width = newWidth;
+  }
+
+  public final int getHeight ()
+  {
+    return this.height;
+  }
+
+  public final void setHeight (int newHeight)
+  {
+    this.height = newHeight;
+  }
+
   /**
    * Initialize the MenuBar of the Jframe passed in constructor
    */
@@ -111,5 +131,13 @@ public class BShipPanel extends JPanel
   private void initBoard () {
     this.boatBoard = new JPanel();
     this.add(this.boatBoard);
+  }
+
+  /**
+   * Reset both grid
+   */
+  public final void resetGrid ()
+  {
+    this.init();
   }
 }
