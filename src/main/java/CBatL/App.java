@@ -3,7 +3,7 @@
  */
 package CBatL;
 
-import CBatL.view.BShipPanel;
+import CBatL.view.graphicalview.BShipPanel;
 
 import javax.swing.*;
 

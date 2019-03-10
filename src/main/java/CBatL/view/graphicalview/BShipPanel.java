@@ -1,4 +1,4 @@
-package cbatl.view.graphicalview;
+package CBatL.view.graphicalview;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
