@@ -1,4 +1,4 @@
-package cbatl.model;
+package cbatl.model.territory;
 
 import java.util.Collection;
 import org.junit.Assert;

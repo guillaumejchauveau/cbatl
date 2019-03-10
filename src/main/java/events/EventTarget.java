@@ -5,13 +5,24 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ */
 public abstract class EventTarget {
   private Map<Class<? extends Event>, Collection<EventListener<? extends Event>>> eventListeners;
 
+  /**
+   *
+   */
   public EventTarget() {
     this.eventListeners = new HashMap<>();
   }
 
+  /**
+   * @param eventType
+   * @param eventListener
+   * @param <T>
+   */
   public <T extends Event> void addEventListener(Class<T> eventType,
                                                  EventListener<T> eventListener) {
     if (!this.eventListeners.containsKey(eventType)) {
@@ -20,6 +31,11 @@ public abstract class EventTarget {
     this.eventListeners.get(eventType).add(eventListener);
   }
 
+  /**
+   * @param eventType
+   * @param eventListener
+   * @param <T>
+   */
   public <T extends Event> void removeEventListener(Class<T> eventType,
                                                     EventListener<T> eventListener) {
     if (this.eventListeners.containsKey(eventType)) {
@@ -27,16 +43,26 @@ public abstract class EventTarget {
     }
   }
 
+  /**
+   * @param eventType
+   * @param <T>
+   */
   public <T extends Event> void removeEventListener(Class<T> eventType) {
     this.eventListeners.remove(eventType);
   }
 
+  /**
+   * @param event
+   * @param <T>
+   */
   @SuppressWarnings("unchecked")
-  public <T extends Event> void dispatchEvent(T event) {
-    Class<? extends Event> eventType = event.getClass();
-    if (this.eventListeners.containsKey(eventType)) {
-      for (EventListener<? extends Event> eventListener : this.eventListeners.get(eventType)) {
-        ((EventListener<T>) eventListener).handleEvent(event);
+  protected <T extends Event> void dispatchEvent(T event) {
+    for (Class<? extends Event> listenedEventType : this.eventListeners.keySet()) {
+      if (listenedEventType.isInstance(event)) {
+        for (EventListener<? extends Event> eventListener :
+          this.eventListeners.get(listenedEventType)) {
+          ((EventListener<T>) eventListener).handleEvent(event);
+        }
       }
     }
   }

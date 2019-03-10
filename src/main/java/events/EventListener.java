@@ -1,5 +1,9 @@
 package events;
 
-public abstract class EventListener<T extends Event> {
-  public abstract void handleEvent(T event);
+/**
+ * @param <T>
+ */
+@FunctionalInterface
+public interface EventListener<T extends Event> {
+  void handleEvent(T event);
 }
