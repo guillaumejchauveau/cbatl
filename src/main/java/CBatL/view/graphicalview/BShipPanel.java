@@ -1,9 +1,6 @@
 package CBatL.view.graphicalview;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class BShipPanel extends JPanel
@@ -19,33 +16,36 @@ public class BShipPanel extends JPanel
   private JMenu helpMenu;
   private JMenuItem replay;
   private JMenuItem quit;
+  private Color background;
+  private Component boxAreaSpace;
 
   public BShipPanel (JFrame frame, int w, int h)
   {
     this.frame = frame;
     this.width = w;
     this.height = h;
+    this.boxAreaSpace = Box.createRigidArea(new Dimension(40,0));
     this.initMenu();
     this.init();
     this.initBoard();
   }
 
-  public final int getWidth ()
+  public final int getGridWidth ()
   {
     return this.width;
   }
 
-  public final void setWidth (int newWidth)
+  public final void setGriWidth (int newWidth)
   {
     this.width = newWidth;
   }
 
-  public final int getHeight ()
+  public final int getGriHeight ()
   {
     return this.height;
   }
 
-  public final void setHeight (int newHeight)
+  public final void setGriHeight (int newHeight)
   {
     this.height = newHeight;
   }
@@ -61,6 +61,7 @@ public class BShipPanel extends JPanel
     this.helpMenu = new JMenu("Help");
 
     this.replay = new JMenuItem("Replay");
+    this.replay.addActionListener(new ResetController(this));
     this.quit = new JMenuItem("Quit");
 
     this.fileMenu.add(this.replay);
@@ -87,7 +88,7 @@ public class BShipPanel extends JPanel
 
     this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     this.add(this.gridP1);
-    this.add(Box.createRigidArea(new Dimension(20,0))); //Create space between both grid
+    this.add(this.boxAreaSpace); //Create space between both grid
     this.add(this.gridP2);
   }
 
@@ -138,6 +139,11 @@ public class BShipPanel extends JPanel
    */
   public final void resetGrid ()
   {
+    this.remove(this.gridP1);
+    this.remove(this.gridP2);
+    this.remove(this.boatBoard);
+    this.remove(this.boxAreaSpace);
     this.init();
+    this.initBoard();
   }
 }
