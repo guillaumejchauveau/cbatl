@@ -35,7 +35,7 @@ public class PlayerManager extends EventTarget {
    */
   public static PlayerManager createFromFile(FileReader fileReader) throws IOException {
     PlayerManager playerManager = new PlayerManager();
-    CSVParser parser = new CSVParser(fileReader, CSVFormat.DEFAULT);
+    CSVParser parser = new CSVParser(fileReader, CSVFormat.DEFAULT.withHeader());
     for (CSVRecord record : parser) {
       Player player = new Player(record.get("Name"), Integer.parseInt(record.get("Score")));
       playerManager.registerPlayer(player);
