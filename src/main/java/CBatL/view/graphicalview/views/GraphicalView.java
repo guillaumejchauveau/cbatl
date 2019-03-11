@@ -7,12 +7,13 @@ import CBatL.view.graphicalview.controllers.ChangeViewController;
 import CBatL.view.graphicalview.views.HelpView;
 
 import javax.swing.*;
+import java.awt.Image;
 
 public class GraphicalView extends JFrame
 {
   public GraphicalView()
   {
-    this.setTitle("GraphicalView");
+    this.setTitle("BattleShip");
     this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
     HelpView help = new HelpView(this);
