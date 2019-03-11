@@ -8,11 +8,11 @@ import CBatL.view.graphicalview.views.HelpView;
 
 import javax.swing.*;
 
-public class BattleShip extends JFrame
+public class GraphicalView extends JFrame
 {
-  public BattleShip ()
+  public GraphicalView()
   {
-    this.setTitle("BattleShip");
+    this.setTitle("GraphicalView");
     this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
     HelpView help = new HelpView(this);
