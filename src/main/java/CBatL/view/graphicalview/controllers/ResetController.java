@@ -1,6 +1,7 @@
-package CBatL.view.graphicalview;
+package CBatL.view.graphicalview.controllers;
 
-import javax.swing.*;
+import CBatL.view.graphicalview.views.BShipPanel;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

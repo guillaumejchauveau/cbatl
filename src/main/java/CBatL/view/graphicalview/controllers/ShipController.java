@@ -1,4 +1,6 @@
-package CBatL.view.graphicalview;
+package CBatL.view.graphicalview.controllers;
+
+import CBatL.view.graphicalview.Case;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,6 +13,7 @@ public class ShipController implements ActionListener {
   {
     this.c = c;
   }
+
   @Override
   public void actionPerformed(ActionEvent e)
   {

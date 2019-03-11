@@ -1,4 +1,7 @@
-package CBatL.view.graphicalview;
+package CBatL.view.graphicalview.views;
+
+import CBatL.view.graphicalview.Case;
+import CBatL.view.graphicalview.controllers.ShipController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,15 +16,17 @@ public class BShipPanel extends JPanel
   private JPanel boatBoard;
   private JMenuBar menuBar;
   private JMenu fileMenu;
-  private JMenu helpMenu;
+  private JMenuItem helpMenu;
   private JMenuItem replay;
   private JMenuItem quit;
-  private Color background;
   private Component boxAreaSpace;
 
   public BShipPanel (JFrame frame, int w, int h)
   {
     this.frame = frame;
+    this.frame.setSize(new Dimension(900, 450));
+    this.frame.setResizable(false);
+
     this.width = w;
     this.height = h;
     this.boxAreaSpace = Box.createRigidArea(new Dimension(40,0));
@@ -50,6 +55,26 @@ public class BShipPanel extends JPanel
     this.height = newHeight;
   }
 
+  public final JMenuItem getResetButton ()
+  {
+    return this.replay;
+  }
+
+  public final JMenuItem getQuitButton ()
+  {
+    return this.quit;
+  }
+
+  public final JMenuItem getHelpButton ()
+  {
+    return this.helpMenu;
+  }
+
+  public final JMenuBar getJMenuBar ()
+  {
+    return this.menuBar;
+  }
+
   /**
    * Initialize the MenuBar of the Jframe passed in constructor
    */
@@ -58,10 +83,9 @@ public class BShipPanel extends JPanel
     this.menuBar = new JMenuBar();
 
     this.fileMenu = new JMenu("File");
-    this.helpMenu = new JMenu("Help");
+    this.helpMenu = new JMenuItem("Help");
 
     this.replay = new JMenuItem("Replay");
-    this.replay.addActionListener(new ResetController(this));
     this.quit = new JMenuItem("Quit");
 
     this.fileMenu.add(this.replay);
