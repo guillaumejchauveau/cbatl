@@ -19,11 +19,10 @@ public class ChangeViewController implements ActionListener
   @Override
   public void actionPerformed(ActionEvent e) {
     System.out.println("je suis la ");
-    this.frame.getContentPane().setVisible(false);
     this.frame.getContentPane().remove(this.frame.getContentPane());
     this.frame.setContentPane(this.panel);
     this.frame.getJMenuBar().remove(this.frame.getJMenuBar());
     this.frame.setJMenuBar(this.menubar);
-    this.frame.getContentPane().setVisible(true);
+    this.frame.revalidate();
   }
 }
