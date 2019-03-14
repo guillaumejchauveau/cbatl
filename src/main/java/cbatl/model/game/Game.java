@@ -62,7 +62,7 @@ public class Game extends EventTarget {
    * @param player The player to involve
    */
   public void addPlayer(Player player, Territory territory) {
-    if (player == null) {
+    if (player == null || territory == null) {
       throw new NullPointerException();
     }
     if (this.hasPlayer(player)) {
