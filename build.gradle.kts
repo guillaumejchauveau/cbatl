@@ -9,6 +9,8 @@ repositories {
 }
 
 dependencies {
+  implementation("org.apache.commons:commons-csv:1.6")
+  testImplementation("junit:junit:4.12")
 }
 
 application {
@@ -23,6 +25,14 @@ buildScan {
 tasks.clean {
   doFirst {
     delete("livraison/dist", "livraison/doc", "livraison/src")
+  }
+}
+
+tasks.jar {
+  manifest {
+    attributes(
+      "Main-Class" to application.mainClassName
+    )
   }
 }
 
