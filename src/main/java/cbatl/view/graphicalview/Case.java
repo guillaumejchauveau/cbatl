@@ -1,8 +1,7 @@
-package CBatL.view.graphicalview;
+package cbatl.view.graphicalview;
 
 import javax.swing.JButton;
 import javax.swing.border.LineBorder;
-import javax.swing.TransferHandler;
 import java.awt.Color;
 
 public class Case extends JButton

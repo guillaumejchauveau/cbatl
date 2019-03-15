@@ -1,6 +1,6 @@
-package CBatL.view.graphicalview.controllers;
+package cbatl.view.graphicalview.controllers;
 
-import CBatL.view.graphicalview.views.BShipPanel;
+import cbatl.view.graphicalview.views.BShipPanel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -1,7 +1,7 @@
-package CBatL.view.graphicalview.views;
+package cbatl.view.graphicalview.views;
 
-import CBatL.view.graphicalview.Case;
-import CBatL.view.graphicalview.controllers.ShipController;
+import cbatl.view.graphicalview.Case;
+import cbatl.view.graphicalview.controllers.ShipController;
 
 import javax.swing.*;
 import java.awt.*;

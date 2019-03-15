@@ -1,6 +1,6 @@
 package cbatl;
 
-import CBatL.view.graphicalview.views.GraphicalView;
+import cbatl.view.graphicalview.views.GraphicalView;
 
 /**
  * Coucou

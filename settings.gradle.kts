@@ -1,1 +1,1 @@
-rootProject.name = "CBatL"
+rootProject.name = "cbatl"

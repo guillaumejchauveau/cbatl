@@ -1,6 +1,6 @@
-package CBatL.view.graphicalview.controllers;
+package cbatl.view.graphicalview.controllers;
 
-import CBatL.view.graphicalview.Case;
+import cbatl.view.graphicalview.Case;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

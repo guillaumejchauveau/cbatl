@@ -1,4 +1,4 @@
-package CBatL.view.graphicalview.controllers;
+package cbatl.view.graphicalview.controllers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -1,4 +1,4 @@
-package CBatL.view.graphicalview.views;
+package cbatl.view.graphicalview.views;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;

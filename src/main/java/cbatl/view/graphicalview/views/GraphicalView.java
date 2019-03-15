@@ -1,13 +1,10 @@
-package CBatL.view.graphicalview.views;
+package cbatl.view.graphicalview.views;
 
-import CBatL.view.graphicalview.views.BShipPanel;
-import CBatL.view.graphicalview.controllers.QuitController;
-import CBatL.view.graphicalview.controllers.ResetController;
-import CBatL.view.graphicalview.controllers.ChangeViewController;
-import CBatL.view.graphicalview.views.HelpView;
+import cbatl.view.graphicalview.controllers.QuitController;
+import cbatl.view.graphicalview.controllers.ResetController;
+import cbatl.view.graphicalview.controllers.ChangeViewController;
 
 import javax.swing.*;
-import java.awt.Image;
 
 public class GraphicalView extends JFrame
 {
