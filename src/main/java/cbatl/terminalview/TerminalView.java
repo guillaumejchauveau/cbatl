@@ -1,99 +1,63 @@
 package cbatl.terminalview;
 
-import java.util.*;
+public class TerminalView {
 
+	private int row;
+	private int col;
+	private String [][] grille1 ;
+	private String [][] grille2 ;
 
-public class TerminalView{
+	public TerminalView(int row, int col) {
+		this.row = row;
+		this.col = col;
+		grille1 = new String [this.row+1][this.col+1];
+		grille2 = new String [this.row+1][this.col+1];
+		this.init(grille1);
+		this.init(grille2);
+	}
 
-  public StringBuilder s1;
-  public StringBuilder s2;
-  public int length;
+	public void init (String [][] grille) {
+		int x=65;
+		for (int i = 0; i <this.row+1; i++) {
+			for (int j = 0; j < this.col+1; j++) {
+			if (i==0) {
+				if (j==0) grille[i][j]=" /";
+				else {
+					char c =(char) x;
+					grille[i][j]= "" + c;
+					x++;
+				}
+			}
+			else if (j==0) {
+				if (i<10 ) grille[i][j]=" "+i;
+				else grille[i][j]=""+i;
+			}
+			else {
+				grille[i][j]=" ";
+			}
+			}
+		}
+	}
 
-  public TerminalView(int x)
-  {
-    this.length = x;
-    StringBuilder s1 = new StringBuilder("   ");
-    for(int c  = 0; c < x ; c++)
-    {
-      s1.append((char)(c + 65));
-      if(c < x-1)
-      {
-        s1.append(" ");
-      }
-    }
-    s1.append(System.lineSeparator());
-    for(int i = 1; i <= x; i++)
-    {
-      s1.append(i + " ");
-      for(int y = 0; y < x; y++)
-      {
-        s1.append("  ");
-      }
-      s1.append(System.lineSeparator());
-    }
-
-    StringBuilder s2 = new StringBuilder(s1.toString());
-    this.s1 = s1;
-    this.s2 = s2;
-  }
-
-  public void insert(int x, int y, int table)
-  {
-    int index = 2*x*(this.length+2)+ 2*y + 1;
-    if(table == 0)
-    {
-      if(s1.charAt(index) == 'O' ||s1.charAt(index) == 'X')
-      {
-        System.err.println("Mauvaise case");
-      }
-      if(s1.charAt(index) == ' ')
-      {
-        s1.replace(index, index+1, "O");
-      }
-      else
-      {
-        s1.replace(index, index+1, "X");
-      }
-    }
-
-    if(table == 1)
-    {
-      if(s2.charAt(index) == 'O' ||s2.charAt(index) == 'X')
-      {
-        System.err.println("Mauvaise case");
-      }
-      if(s2.charAt(index) == ' ')
-      {
-        s2.replace(index, index+1, "O");
-      }
-      else
-      {
-        s2.replace(index, index+1, "X");
-      }
-    }
-  }
-
-  public void insert(int x, char c, int table)
-  {
-    int y = Character.getNumericValue(c) - 9;
-    this.insert(x, y, table);
-  }
-
-  @Override
-  public String toString()
-  {
-    String legende = new String(
-      "legende :  O plouf" + System.lineSeparator()+
-      "           X boom " + System.lineSeparator()+
-      "           / boat " + System.lineSeparator()
-    );
-    return this.s1.toString() + System.lineSeparator() + this.s2.toString() +System.lineSeparator() + legende;
-  }
-
-  public static void main(String[] arg)
-  {
-    TerminalView t1 = new TerminalView(7); // -> 7 de length;
-    t1.insert(2, 'G', 0);
-    System.out.println(t1);
-  }
+	public void showGrille() {
+		System.out.println("Player 1");
+		for (int i = 0; i <this.row+1; i++) {
+			for (int j = 0; j < this.col+1; j++) {
+				System.out.print(grille1[i][j]);
+				System.out.print(" | ");
+			}
+			System.out.println("");
+		}
+		System.out.println("Player 2");
+		for (int i = 0; i <this.row+1; i++) {
+			for (int j = 0; j < this.col+1; j++) {
+				System.out.print(grille1[i][j]);
+				System.out.print(" | ");
+			}
+			System.out.println("");
+		}
+	}
+	public void touch(int x,int y,int t) {
+		grille1[x][y] = "X";
+	}
 }
