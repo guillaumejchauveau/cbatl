@@ -12,7 +12,7 @@ dependencies {
 }
 
 application {
-  mainClassName = "CBatL.App"
+  mainClassName = "cbatl.App"
 }
 
 buildScan {
