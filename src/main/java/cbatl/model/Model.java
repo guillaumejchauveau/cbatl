@@ -16,6 +16,9 @@ public class Model extends EventTarget {
 
   private Game currentGame;
   private State currentState;
+  /**
+   *
+   */
   public final PlayerManager playerManager;
 
   public Model(PlayerManager playerManager) {

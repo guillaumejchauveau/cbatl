@@ -12,12 +12,12 @@ public class GameTest {
   public void playerTerritory() {
     Game game = new Game();
 
-    Territory t2 = new Territory(new Point(5, 5));
+    Territory t2 = new Territory(5, 5);
     t2.addBoat(new Boat(new Point(0, 0), 1, Boat.Orientation.NORTH));
     game.addPlayer(new Player("a"), t2);
 
     Player p = new Player("p");
-    Territory t = new Territory(new Point(5, 5));
+    Territory t = new Territory(5, 5);
     Boat b = new Boat(new Point(0, 0), 1, Boat.Orientation.NORTH);
     t.addBoat(b);
     game.addPlayer(p, t);
@@ -28,5 +28,7 @@ public class GameTest {
     game.shoot(p, new Point(0, 0));
     Assert.assertEquals(1, b.getShotSections().size());
     Assert.assertFalse(game.isPlayerAlive(p));
+
+    // TODO: Add test for RandomPlayer.
   }
 }

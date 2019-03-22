@@ -1,10 +1,11 @@
 package cbatl.model.game;
 
-import cbatl.model.events.game.CurrentPlayerShotPlayerInGameEvent;
-import cbatl.model.events.game.GameCurrentPlayerChangedEvent;
+import cbatl.model.events.game.CurrentPlayerChangedEvent;
+import cbatl.model.events.game.CurrentPlayerShotEvent;
 import cbatl.model.events.game.GameOverEvent;
-import cbatl.model.events.game.PlayerDiedInGameEvent;
+import cbatl.model.events.game.PlayerDiedEvent;
 import cbatl.model.player.Player;
+import cbatl.model.player.RandomPlayer;
 import cbatl.model.territory.Boat;
 import cbatl.model.territory.Point;
 import cbatl.model.territory.Territory;
@@ -63,7 +64,10 @@ public class Game extends EventTarget {
    */
   public void addPlayer(Player player, Territory territory) {
     if (player == null || territory == null) {
-      throw new NullPointerException();
+      throw new IllegalArgumentException("Player or territory is null");
+    }
+    if (this.getPlayerCount() == 0 && player instanceof RandomPlayer) {
+      throw new IllegalArgumentException("First player cannot be a random player");
     }
     if (this.hasPlayer(player)) {
       throw new IllegalArgumentException("Duplicate player");
@@ -92,7 +96,7 @@ public class Game extends EventTarget {
    */
   public Boolean isPlayerAlive(Player player) {
     if (!this.hasPlayer(player)) {
-      throw new IllegalArgumentException();
+      return false;
     }
 
     for (Boat boat : this.getPlayerTerritory(player).getBoats()) {
@@ -151,13 +155,16 @@ public class Game extends EventTarget {
    *
    */
   public void shoot(Player targetedPlayer, Point shot) {
+    if (this.isOver()) {
+      throw new IllegalStateException();
+    }
     if (!this.hasPlayer(targetedPlayer) || !this.isPlayerAlive(targetedPlayer)) {
       throw new IllegalArgumentException();
     }
-    this.dispatchEvent(new CurrentPlayerShotPlayerInGameEvent(targetedPlayer, shot));
+    this.dispatchEvent(new CurrentPlayerShotEvent(targetedPlayer, shot));
     this.getPlayerTerritory(targetedPlayer).receiveShot(shot);
     if (!this.isPlayerAlive(targetedPlayer)) {
-      this.dispatchEvent(new PlayerDiedInGameEvent(targetedPlayer));
+      this.dispatchEvent(new PlayerDiedEvent(targetedPlayer));
     }
 
     if (this.isOver()) {
@@ -171,6 +178,12 @@ public class Game extends EventTarget {
     if (this.currentPlayerIndex >= this.getAlivePlayerCount()) {
       this.currentPlayerIndex = 0;
     }
-    this.dispatchEvent(new GameCurrentPlayerChangedEvent());
+
+    if (this.getCurrentPlayer() instanceof RandomPlayer) {
+      Object[] result = ((RandomPlayer) this.getCurrentPlayer()).chooseShot(this);
+      this.shoot((Player) result[0], (Point) result[1]);
+      return;
+    }
+    this.dispatchEvent(new CurrentPlayerChangedEvent());
   }
 }

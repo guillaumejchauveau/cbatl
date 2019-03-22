@@ -1,7 +1,7 @@
 package cbatl.model.territory;
 
-import cbatl.model.events.territory.BoatShotEvent;
 import cbatl.model.events.territory.BoatSankEvent;
+import cbatl.model.events.territory.BoatShotEvent;
 import events.EventTarget;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +16,7 @@ public class Boat extends EventTarget {
   private Integer length;
   private Orientation orientation;
   private Set<Integer> shotSections;
+
   /**
    * @param head
    * @param length

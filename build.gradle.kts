@@ -17,6 +17,10 @@ application {
   mainClassName = "cbatl.App"
 }
 
+tasks.withType<JavaExec>().configureEach {
+  standardInput = System.`in`
+}
+
 buildScan {
   setTermsOfServiceUrl("https://gradle.com/terms-of-service")
   setTermsOfServiceAgree("yes")

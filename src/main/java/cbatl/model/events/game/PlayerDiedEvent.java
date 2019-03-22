@@ -6,7 +6,7 @@ import events.Event;
 /**
  * Dispatched by a {@link cbatl.model.game.Game} when a player lost his last boat.
  */
-public class PlayerDiedInGameEvent extends Event {
+public class PlayerDiedEvent extends Event {
   /**
    * The player who died.
    */
@@ -17,7 +17,7 @@ public class PlayerDiedInGameEvent extends Event {
    *
    * @param player The player who died.
    */
-  public PlayerDiedInGameEvent(Player player) {
+  public PlayerDiedEvent(Player player) {
     this.player = player;
   }
 }
