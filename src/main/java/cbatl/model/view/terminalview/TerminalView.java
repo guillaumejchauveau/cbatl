@@ -1,4 +1,4 @@
-package cbatl.terminalview;
+package cbatl.model.view.terminalview;
 
 public class TerminalView {
 
