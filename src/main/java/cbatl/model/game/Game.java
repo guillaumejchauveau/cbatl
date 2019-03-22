@@ -130,8 +130,15 @@ public class Game extends EventTarget {
   /**
    * @return
    */
+  public Integer getCurrentPlayerIndex() {
+    return this.currentPlayerIndex;
+  }
+
+  /**
+   * @return
+   */
   public Player getCurrentPlayer() {
-    return this.getAlivePlayers().get(this.currentPlayerIndex);
+    return this.getAlivePlayers().get(this.getCurrentPlayerIndex());
   }
 
   /**
@@ -175,7 +182,7 @@ public class Game extends EventTarget {
 
     this.currentPlayerIndex++;
     // Loops back to the first player if the previous was actually the last.
-    if (this.currentPlayerIndex >= this.getAlivePlayerCount()) {
+    if (this.getCurrentPlayerIndex() >= this.getAlivePlayerCount()) {
       this.currentPlayerIndex = 0;
     }
 

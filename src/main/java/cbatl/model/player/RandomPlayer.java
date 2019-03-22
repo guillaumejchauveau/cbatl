@@ -9,7 +9,7 @@ public class RandomPlayer extends Player {
   private Random random;
 
   public RandomPlayer() {
-    super("Joueur aléatoire");
+    super("Bot");
     this.random = new Random();
   }
 

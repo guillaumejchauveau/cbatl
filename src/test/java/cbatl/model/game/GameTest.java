@@ -1,6 +1,7 @@
 package cbatl.model.game;
 
 import cbatl.model.player.Player;
+import cbatl.model.player.RandomPlayer;
 import cbatl.model.territory.Boat;
 import cbatl.model.territory.Point;
 import cbatl.model.territory.Territory;
@@ -28,7 +29,23 @@ public class GameTest {
     game.shoot(p, new Point(0, 0));
     Assert.assertEquals(1, b.getShotSections().size());
     Assert.assertFalse(game.isPlayerAlive(p));
+  }
 
-    // TODO: Add test for RandomPlayer.
+  @Test
+  public void randomPlayerHandling() {
+    Game game = new Game();
+    Player human = new Player("Human");
+    Territory t1 = new Territory(5, 5);
+    t1.addBoat(new Boat(new Point(0, 0), 2, Boat.Orientation.NORTH));
+    game.addPlayer(human, t1);
+
+    Player random = new RandomPlayer();
+    Territory t2 = new Territory(5, 5);
+    t2.addBoat(new Boat(new Point(0, 0), 2, Boat.Orientation.NORTH));
+    game.addPlayer(random, t2);
+
+    game.shoot(random, new Point(0, 0));
+    Assert.assertEquals(human, game.getCurrentPlayer());
+    Assert.assertEquals(1, game.getPlayerTerritory(human).getReceivedShots().size());
   }
 }
