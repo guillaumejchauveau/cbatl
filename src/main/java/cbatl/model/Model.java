@@ -29,15 +29,18 @@ public class Model extends EventTarget {
 
   public void playGame(Game game) {
     this.currentGame = game;
-    this.currentState = State.PLAYING_GAME;
+    this.setCurrentState(State.PLAYING_GAME);
     this.getCurrentGame().addEventListener(GameOverEvent.class, event -> {
-      this.currentState = State.GAME_OVER;
-      this.dispatchEvent(new StateChangedEvent());
+      this.setCurrentState(State.GAME_OVER);
     });
-    this.dispatchEvent(new StateChangedEvent());
   }
 
   public State getCurrentState() {
     return this.currentState;
+  }
+
+  public void setCurrentState(State state) {
+    this.currentState = state;
+    this.dispatchEvent(new StateChangedEvent());
   }
 }

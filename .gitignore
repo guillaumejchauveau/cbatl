@@ -6,3 +6,4 @@ build
 
 livraison
 !livraison/rapport/*.pdf
+/players.csv
