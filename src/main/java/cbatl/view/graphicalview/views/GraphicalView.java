@@ -16,7 +16,7 @@ public class GraphicalView extends JFrame
     HelpView help = new HelpView(this);
     BShipPanel bShipP = new BShipPanel(this, 10, 10);
 
-    ResetController reset = new ResetController(bShipP);
+    /*ResetController reset = new ResetController(bShipP);
     QuitController quit = new QuitController(this);
     ChangeViewController cvcHelp = new ChangeViewController(this, help, help.getJMenuBar());
     ChangeViewController cvcBack = new ChangeViewController(this, bShipP, bShipP.getJMenuBar());
@@ -25,9 +25,13 @@ public class GraphicalView extends JFrame
     bShipP.getQuitButton().addActionListener(quit);
     bShipP.getHelpButton().addActionListener(cvcHelp);
 
-    help.getBackButton().addActionListener(cvcBack);
+    help.getBackButton().addActionListener(cvcBack);*/
 
-    this.setContentPane(bShipP);
+    EndGame end = new EndGame(this, true);
+
+    Launcher l = new Launcher(this);
+
+    this.setContentPane(end);
     this.setVisible(true);
   }
 }
