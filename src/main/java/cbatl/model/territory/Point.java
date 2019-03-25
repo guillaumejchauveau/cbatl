@@ -18,6 +18,9 @@ public class Point {
    * @param y
    */
   public Point(Integer x, Integer y) {
+    if (x < 0 || y < 0) {
+      throw new IllegalArgumentException("Coordinates must be positive");
+    }
     this.x = x;
     this.y = y;
   }

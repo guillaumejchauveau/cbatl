@@ -7,7 +7,7 @@ import events.Event;
 /**
  * Dispatched by a {@link cbatl.model.game.Game} when it's current player shot another player.
  */
-public class CurrentPlayerShotPlayerInGameEvent extends Event {
+public class CurrentPlayerShotEvent extends Event {
   /**
    * The player that was targeted.
    */
@@ -23,7 +23,7 @@ public class CurrentPlayerShotPlayerInGameEvent extends Event {
    * @param targetedPlayer The player that was targeted.
    * @param shot           The point that was shot.
    */
-  public CurrentPlayerShotPlayerInGameEvent(Player targetedPlayer, Point shot) {
+  public CurrentPlayerShotEvent(Player targetedPlayer, Point shot) {
     this.targetedPlayer = targetedPlayer;
     this.shot = shot;
   }

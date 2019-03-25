@@ -1,11 +1,12 @@
 package cbatl;
 
+import cbatl.controller.Controller;
+import java.io.File;
+
 public class App {
   public static void main(String[] args) {
-    System.out.println(new App().getGreeting());
-  }
-
-  public String getGreeting() {
-    return "Hello world.";
+    File playerFile = new File("players.csv");
+    Controller controller = new Controller(playerFile);
+    //controller.attachView();
   }
 }
