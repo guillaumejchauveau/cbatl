@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.ArrayList;
-import view.View;
+import cbatl.model.view.*;
 
 public class TerminalInterface{
 
@@ -14,10 +14,9 @@ public class TerminalInterface{
     private final InputStream in;
     private final Scanner scanner;
 
-     /**
-   * @param out The output stream (like {@link System#out})
-   * @param in  The input stream (like {@link System#in})
-   */
+    /**
+    * Manages the command line Interface
+    */
     public TerminalInterface() {
         this.out = System.out;
         this.in = System.in;
@@ -112,7 +111,7 @@ public class TerminalInterface{
   }
 
   /**
-   * Displays BATTLESHIP's 
+   * Displays BATTLESHIP's game menu
    */
   public void createGameMenu()
   {
@@ -124,6 +123,9 @@ public class TerminalInterface{
     this.println("");
   }
 
+  /**
+   * Creates a player and send event to model
+   */
   public void createPlayer()
   {
     this.header("Creer un joueur");
@@ -145,11 +147,4 @@ public class TerminalInterface{
 
   }
 
-  public void manageGamesMenu()
-  {
-    this.header("Menu des parties");
-
-    //Fill
-
-  }
 }

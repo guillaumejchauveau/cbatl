@@ -7,6 +7,9 @@ public class TerminalView {
 	private String [][] grille1 ;
 	private String [][] grille2 ;
 
+	/**
+	 * Object containing the two grids for the players in the command line Interface
+	 */
 	public TerminalView(int row, int col) {
 		this.row = row;
 		this.col = col;
@@ -16,6 +19,9 @@ public class TerminalView {
 		this.init(grille2);
 	}
 
+	/**
+	 * Initializes the grid
+	 */
 	public void init (String [][] grille) {
 		int x=65;
 		for (int i = 0; i <this.row+1; i++) {
@@ -39,6 +45,9 @@ public class TerminalView {
 		}
 	}
 
+	/**
+	 * Prints grids in command line Interface
+	 */
 	public void showGrille() {
 		System.out.println("Player 1");
 		for (int i = 0; i <this.row+1; i++) {
@@ -57,6 +66,13 @@ public class TerminalView {
 			System.out.println("");
 		}
 	}
+
+	/**
+	 * Change the grid of the player depending of a move coordinate
+	 * @param x line of the move
+	 * @param y row of the move
+	 * @param t the grid where the move happens
+	 */
 	public void touch(int x,int y,int t) {
 		grille1[x][y] = "X";
 	}
