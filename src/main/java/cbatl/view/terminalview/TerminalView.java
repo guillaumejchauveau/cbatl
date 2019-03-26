@@ -1,5 +1,8 @@
-package cbatl.model.view.terminalview;
+package cbatl.view.terminalview;
 
+/**
+ * Object containing the two grids for the players in the command line Interface
+ */
 public class TerminalView {
 
 	private int row;
@@ -7,9 +10,6 @@ public class TerminalView {
 	private String [][] grille1 ;
 	private String [][] grille2 ;
 
-	/**
-	 * Object containing the two grids for the players in the command line Interface
-	 */
 	public TerminalView(int row, int col) {
 		this.row = row;
 		this.col = col;
