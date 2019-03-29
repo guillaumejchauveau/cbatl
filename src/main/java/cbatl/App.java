@@ -1,18 +1,14 @@
 package cbatl;
 
-import cbatl.view.graphicalview.views.GraphicalView;
+import cbatl.controller.Controller;
+import cbatl.view.graphicalview.views.GraphicView;
 
-/**
- * Coucou
- */
+import java.io.File;
+
 public class App {
-  public static void main(String[] args)
-  {
-    System.out.println(new App().getGreeting());
-    new GraphicalView();
-  }
-
-  public String getGreeting() {
-    return "Hello world.";
+  public static void main(String[] args) {
+    File playerFile = new File("players.csv");
+    Controller controller = new Controller(playerFile);
+    controller.attachView(new GraphicView());
   }
 }

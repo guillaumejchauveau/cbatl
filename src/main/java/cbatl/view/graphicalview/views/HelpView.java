@@ -34,7 +34,7 @@ public class HelpView extends JPanel
   }
   private final void initText ()
   {
-    String str = "This is a tutorial to GraphicalView game.";
+    String str = "This is a tutorial to game.";
     this.text.setText(str);
   }
 }

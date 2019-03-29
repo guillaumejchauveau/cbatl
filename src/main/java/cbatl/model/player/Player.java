@@ -22,7 +22,7 @@ public class Player extends EventTarget {
    * @param score
    */
   public Player(String name, Integer score) {
-    if (!name.matches("^[a-zA-Z0-9]+$") || score < 0) {
+    if (name.length() < 1 || !name.matches("^[a-zA-Z0-9]+$") || score < 0) {
       throw new IllegalArgumentException();
     }
 

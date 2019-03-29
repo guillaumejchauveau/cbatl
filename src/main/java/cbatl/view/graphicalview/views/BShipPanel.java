@@ -13,26 +13,18 @@ public class BShipPanel extends JPanel
   private int height;
   private JPanel gridP1;
   private JPanel gridP2;
-  private JPanel boatBoard;
-  private JMenuBar menuBar;
-  private JMenu fileMenu;
-  private JMenuItem helpMenu;
-  private JMenuItem replay;
-  private JMenuItem quit;
   private Component boxAreaSpace;
 
-  public BShipPanel (JFrame frame, int w, int h)
+  public BShipPanel (JFrame frame)
   {
     this.frame = frame;
     this.frame.setSize(new Dimension(900, 450));
     this.frame.setResizable(false);
 
-    this.width = w;
-    this.height = h;
+    this.width = 10;
+    this.height = 10;
     this.boxAreaSpace = Box.createRigidArea(new Dimension(40,0));
-    this.initMenu();
     this.init();
-    this.initBoard();
   }
 
   public final int getGridWidth ()
@@ -55,46 +47,14 @@ public class BShipPanel extends JPanel
     this.height = newHeight;
   }
 
-  public final JMenuItem getResetButton ()
+  public void setWidth (int newWidth)
   {
-    return this.replay;
+    this.width = newWidth;
   }
 
-  public final JMenuItem getQuitButton ()
+  public void setHeight (int newHeight)
   {
-    return this.quit;
-  }
-
-  public final JMenuItem getHelpButton ()
-  {
-    return this.helpMenu;
-  }
-
-  public final JMenuBar getJMenuBar ()
-  {
-    return this.menuBar;
-  }
-
-  /**
-   * Initialize the MenuBar of the Jframe passed in constructor
-   */
-  private final void initMenu ()
-  {
-    this.menuBar = new JMenuBar();
-
-    this.fileMenu = new JMenu("File");
-    this.helpMenu = new JMenuItem("Help");
-
-    this.replay = new JMenuItem("Replay");
-    this.quit = new JMenuItem("Quit");
-
-    this.fileMenu.add(this.replay);
-    this.fileMenu.add(this.quit);
-
-    this.menuBar.add(this.fileMenu);
-    this.menuBar.add(this.helpMenu);
-
-    this.frame.setJMenuBar(this.menuBar);
+    this.height = newHeight;
   }
 
   /**
@@ -153,10 +113,6 @@ public class BShipPanel extends JPanel
     }
   }
 
-  private void initBoard () {
-    this.boatBoard = new JPanel();
-    this.add(this.boatBoard);
-  }
 
   /**
    * Reset both grid
@@ -165,9 +121,7 @@ public class BShipPanel extends JPanel
   {
     this.remove(this.gridP1);
     this.remove(this.gridP2);
-    this.remove(this.boatBoard);
     this.remove(this.boxAreaSpace);
     this.init();
-    this.initBoard();
   }
 }
