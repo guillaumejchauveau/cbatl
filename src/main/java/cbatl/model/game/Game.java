@@ -22,6 +22,7 @@ import java.util.Map;
 public class Game extends EventTarget {
   private Integer currentPlayerIndex;
   private List<Player> players;
+  private Map<String, Player> playerNames;
   private Map<Player, Territory> playerTerritoryMap;
 
   /**
@@ -29,6 +30,7 @@ public class Game extends EventTarget {
    */
   public Game() {
     this.players = new ArrayList<>();
+    this.playerNames = new HashMap<>();
     this.playerTerritoryMap = new HashMap<>();
     this.currentPlayerIndex = 0;
   }
@@ -76,7 +78,12 @@ public class Game extends EventTarget {
       throw new IllegalArgumentException("Duplicate territory");
     }
     this.players.add(player);
+    this.playerNames.put(player.getName(), player);
     this.playerTerritoryMap.put(player, territory);
+  }
+
+  public Player getPlayer(String playerName) {
+    return this.playerNames.get(playerName);
   }
 
   /**
@@ -165,7 +172,7 @@ public class Game extends EventTarget {
     if (this.isOver()) {
       throw new IllegalStateException();
     }
-    if (!this.hasPlayer(targetedPlayer) || !this.isPlayerAlive(targetedPlayer)) {
+    if (!this.isPlayerAlive(targetedPlayer)) {
       throw new IllegalArgumentException();
     }
     this.dispatchEvent(new CurrentPlayerShotEvent(targetedPlayer, shot));

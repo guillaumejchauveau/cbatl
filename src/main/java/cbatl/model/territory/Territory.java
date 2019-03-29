@@ -52,7 +52,7 @@ public class Territory extends EventTarget {
   }
 
   public void generateFleet() {
-
+    this.addBoat(new Boat(new Point(0, 0), 5, Boat.Orientation.NORTH));
   }
 
   /**
