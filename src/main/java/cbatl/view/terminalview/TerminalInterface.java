@@ -5,65 +5,110 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import javax.sql.rowset.spi.SyncResolver;
+
 import java.util.ArrayList;
 import cbatl.model.player.Player;
+import cbatl.model.player.RandomPlayer;
+import cbatl.model.territory.Point;
+import cbatl.model.territory.Territory;
 import cbatl.view.events.*;
-import cbatl.App;
 import cbatl.model.*;
-import cbatl.model.events.player.PlayerListUpdatedEvent;
+import cbatl.model.events.StateChangedEvent;
 import cbatl.view.View;
 
-  /**
-  * Manages the command line Interface
-  */
-public class TerminalInterface extends View{
+/**
+ * Manages the command line Interface
+ */
+public class TerminalInterface extends View implements Runnable {
 
   private final PrintStream out;
-  private final InputStream in;
   private final Scanner scanner;
   private Model model;
+  private final Object answerLock;
+  private String answer;
+  private Player ourPlayer;
+  private Player opponent;
+
 
   public TerminalInterface() {
-      this.out = System.out;
-      this.in = System.in;
-      this.scanner = new Scanner(this.in);
+    this.out = System.out;
+    InputStream in = System.in;
+    this.scanner = new Scanner(in);
+    answerLock = new Object();
+    answer = "";
+    Thread thread = new Thread(this);
+    thread.start();
+  }
+
+
+  @Override
+  public void run() {
+    while (!Thread.interrupted()) {
+      String input = this.scanner.nextLine();
+      parseInput(input);
+      System.out.println("input = " + input);
+    }
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void attachModel(Model model){this.model = model;}
+  public void attachModel(Model m)
+  {
+    this.model = m;
+    this.println("attaching model");
+    this.println(model.getCurrentState() == Model.State.MAIN_MENU);
+    this.model.addEventListener(StateChangedEvent.class, event -> this.whatToDo());
+
+    this.whatToDo();
+
+  }
+
+  private void whatToDo(){
+    switch(this.model.getCurrentState()){
+      case MAIN_MENU : mainMenu(); break;
+      case CREATING_GAME : createGameMenu(); break;
+      case PLAYING_GAME : playGame(); break;
+      case GAME_OVER : gameOver(); break;
+    }
+  }
 
   /**
    * Clear the Terminal.
    */
-    public void clear() {
-        this.out.print("\033[H\033[2J");
-        this.out.flush();
+  private void clear() {
+    this.out.print("\033[H\033[2J");
+    this.out.flush();
   }
 
   /**
    * Prints in the terminal.
-   * @param text object to print
    */
-    public void print(Object text) {
-        this.out.print(text);
+  private void print() {
+    this.out.print((Object) ">");
   }
 
-/**
+  private void print(Object o)
+  {
+    this.out.print(o);
+  }
+
+  /**
    * Prints in the terminal and then \n.
    * @param text object to print
    */
-    public void println(Object text) {
-        this.out.println(text);
+  private void println(Object text) {
+    this.out.println(text);
   }
 
-/**
- * Prints a header for the different menus.
- * @param head title of the menu to print
- */
-  public void header(String head)
+  /**
+   * Prints a header for the different menus.
+   * @param head title of the menu to print
+   */
+  private void header(String head)
   {
     this.clear();
     this.println("    --BATTLESHIP--" + System.lineSeparator());
@@ -71,174 +116,404 @@ public class TerminalInterface extends View{
   }
 
   /**
-   * Prints the choices the player has to do and sends back its answer. Used only for the menus.
+   * Prints the choices the player has to do. Used only for the menus.
    * @param hm Hash map containing different choices. 
-   * @return the player's answer via Scanner
    */
-  public String waitingForAnswer(HashMap<String, String> hm)
+  private void waitingForAnswer(HashMap<String, String> hm)
   {
-    ArrayList<String> ls = new ArrayList<>();
-    String input = "";
     for(int i = 0; i < hm.size(); i++)
     {
-        this.println("  " + i +". " + hm.get("" +i));
-        ls.add("" + i);
+      this.println("  " + i +". " + hm.get("" +i));
+    }
+  }
+
+  private void parseInput(String input)
+  {
+    switch (input){
+      case "x" :
+        this.exitGame();
+        break;
+      case "m" :
+        this.dispatchEvent(new MainMenuEvent());
+        break;
+      default :
+        synchronized (answerLock) {
+          this.answer = input;
+          this.println("answer = " + input);
+          this.answerLock.notify();
+        }
+        break;
     }
 
-    while(true)
-    {
-        this.print(">");
-        input = this.scanner.nextLine();
-        if(ls.contains(input)) 
-            break;
-        else 
-            this.println("Entree non conforme. Reessayz");
-        
-    }
-    return input;
   }
 
   /**
    * Prints Players and their score on screen.
    */
-  public void freePlayers()
+  private void freePlayers()
   {
-    Collection<Player> lp = this.model.playerManager.getPlayers();
-    for(Player p : lp)
-    {
-      this.println(p.getName() + " | score: " + p.getScore());
+    try{
+      Collection<Player> lp = this.model.playerManager.getPlayers();
+      if(lp.size() <= 0)
+        this.println("    Aucun joueur reference." + System.lineSeparator());
+
+      else{
+        for(Player p : lp)
+        {
+          this.println(p.getName() + " | score: " + p.getScore());
+        }
+      }
+     
     }
+    catch(NullPointerException e){
+      this.println("    Aucun joueur reference.");
+    }
+
   }
 
   /**
    * Displays BATTLESHIP's Main Menu. From here, the player can leave or go to BATTLESHIP's game menu.
    */
-  public void mainMenu()
+  private void mainMenu()
   {
     this.header("Menu Principal");
 
     this.println("Joueurs disponibles:");
     this.freePlayers();
     HashMap<String,String> hm = new HashMap<>();
-    hm.put("0", "Créer une partie");
+    hm.put("0", "Creer une partie");
     hm.put("1", "Quitter");
 
-    String input = this.waitingForAnswer(hm);
-
-    switch (input) {
-        case "0": this.dispatchEvent(new CreateGameMenuEvent());
-        case "1": this.dispatchEvent(new ExitEvent());
+    this.waitingForAnswer(hm);
+    while(true){
+      String input;
+      synchronized (answerLock) {
+        try {
+          this.answerLock.wait();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        input = this.answer;
+        System.out.println("main menu answer");
       }
+      if (input != null) {
+        switch (input) {
+          case "0":
+            this.dispatchEvent(new CreateGameMenuEvent()); break;
+          case "1":
+            this.exitGame();break;
+          default :
+            break;
+        }
+      }
+    }
+    //System.out.println("Leaving main menu.");
   }
 
   /**
    * Displays BATTLESHIP's game menu. Allows the player to create a new payer or to play a game with a chososen player.
    */
-  public void createGameMenu()
+  private void createGameMenu()
   {
     this.header("Menu du jeu");
     this.println("Joueurs disponibles:");
     this.freePlayers();
-    
+
     HashMap<String, String> hm = new HashMap<>();
     hm.put("0", "Incarner un joueur present.");
     hm.put("1", "Creer un nouveau joueur.");
 
-    String input = this.waitingForAnswer(hm);
-    switch (input){
-      case "0" : break;
-      case "1" : this.createPlayer(); break;
+    this.waitingForAnswer(hm);
+    //this.answer = null;
+
+    boolean breaker = false;
+    while(!breaker){
+      String input;
+      synchronized (answerLock) {
+        try {
+          this.answerLock.wait();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        input = this.answer;
+      }
+      if (input != null) {
+        switch(input){
+          case "0": breaker = true; break;
+          case "1": this.createPlayer(); return;
+        }
+      }
     }
 
-    this.println("Entrer le nom de joueur que vous voulez incarner:");
-    this.print(">");
-    String s = "";
-    boolean stop = false;
-    while(!stop)
+
+    this.println("Veuillez entrer le nom du joueur que vous voulez incarner.");
+    while(true)
     {
-      s = this.scanner.nextLine();
-      if(s.matches("*[a-zA-Z_0-9]"))
-      {
-        if(this.model.playerManager.hasPlayer(s))
-        {
-          this.model.playerManager.registerPlayer(new Player(s));
-          stop = true;
+
+      String input;
+      synchronized (answerLock) {
+        try {
+          answerLock.wait();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
         }
+        input = this.answer;
+      }
+      if( this.model.playerManager.hasPlayer(input))
+      {
+        ArrayList<Player> players = new ArrayList<>();
+        this.ourPlayer = this.model.playerManager.getPlayer(input);
+        this.opponent = new RandomPlayer();
+        players.add(this.ourPlayer);
+        players.add(this.opponent);
+        this.dispatchEvent(new PlayGameEvent(players));
       }
       else
       {
-        this.println("Le nom du joueur n'existe pas.");
-        this.print(">");
+        this.println("Le jeu ne contient pas ce joueur.");
       }
     }
-    ArrayList<Player> player = new ArrayList<>();
-    player.add(this.model.playerManager.getPlayer(s));
-    this.dispatchEvent(new PlayGameEvent(player));
   }
 
+
   /**
-   * Creates a player and send player to model
+   * Creates a player and sends player to model
    */
-  public void createPlayer()
+  private void createPlayer()
   {
+    this.answer = "";
     this.header("Creer un joueur");
 
     HashMap<String, String> hm = new HashMap<>();
-    hm.put("0", "Creer un nouveau joueur.");
-    hm.put("1", "Retourner au menu principal.");
-    hm.put("2", "Retourner au menu de jeu.");
-    hm.put("3", "Quitter le jeu.");
+    hm.put("0", "Retourner au menu principal.");
+    hm.put("1", "Retourner au menu de jeu.");
+    hm.put("2", "Quitter le jeu.");
 
-    String input = "";
-    String newPlayerName = "";
-    this.print("Nom du nouveau Joueur: >");
-    while(true){
-      while(true)
+    this.println("Entrer le nom du nouveau Joueur:");
+    boolean breaker = false;
+    while(!breaker)
+    {
+      synchronized (answerLock)
       {
-          newPlayerName = this.scanner.nextLine();
-          if(newPlayerName.matches("*[a-zA-Z_0-9]"))
-          {
-              if(!this.model.playerManager.hasPlayer(newPlayerName))
-              {
-                this.model.playerManager.registerPlayer(new Player(newPlayerName));
-                break;
-              }
-          }
-          else 
-              this.println("Le nom du joueur doit être numerico alphabetique");
-          this.print(">");
+        try {
+          this.answerLock.wait();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
       }
-      this.println("");     
-      input = this.waitingForAnswer(hm);
-      if(input != "0")
-        break;
+      
+      String name = this.answer;
+      try {
+        this.model.playerManager.registerPlayer(new Player(name));
+        breaker = true;
+      } catch (NullPointerException e) {
+        e.printStackTrace();
+      } catch(IllegalArgumentException e) {
+        this.println("Ce nom existe deja.") ;
+      }
     }
+
+    this.waitingForAnswer(hm);
+    this.answer = "";
+    breaker = false;
+    while(!breaker)
+    {
+      synchronized (answerLock)
+      {
+        try {
+          this.answerLock.wait();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+      
+      String input = this.answer;
+      switch (input){
+        case "0" : breaker = true; this.dispatchEvent(new MainMenuEvent()); break;
+        case "1" : breaker = true; this.createGameMenu();break;
+        case "2" : breaker = true; this.exitGame(); break;
+      }
+
+    }
+  }
+
+/**
+ * Prints the two grid and the associated legend.
+ * @param g1 the first grid to print.
+ * @param g2the the second grid to print.
+ */
+  public void displayGrids(String[][] g1, String[][] g2)
+  {
+
+    String legend = "Legende: . = case vide" +
+                    "    / = bateau" + System.lineSeparator()+
+                    "         o = touche   " +
+                    "    x = pas touche" + System.lineSeparator();
     
-    switch (input){
-      case "1" : this.dispatchEvent(new MainMenuEvent());
-      case "2" : this.dispatchEvent(new CreateGameMenuEvent());
-      case "3" : this.dispatchEvent(new ExitEvent());
+    int col = g1.length;
+    int row = g1[0].length;
+    this.println(col + " " + row);
+    String spacer = "  ";
+    for(int x = 0; x < row; x++)
+    {
+
+      if(x == 0)
+      {
+        for(int i = 0; i < 2; i++)
+        {
+
+          this.print("/ ");
+          for(int x2 = 0; x2 < col; x2++)
+          {
+            this.print((char) (65+x2));
+            if(x2 -2 < col)
+              this.print(" | ");
+           
+          }
+          this.print("  ");
+          
+        }
+      }
+      this.println("");
+      for(int y1 = 0; y1 < col; y1++){
+        if(y1 == 0)
+        this.print(x + " ");
+        this.print(g1[x][y1]);
+        if(y1 -1 < col)
+            this.print(" | ");
+      }
+      this.print(spacer);
+      for(int y2 = 0; y2 < col; y2++){
+        if(y2 == 0)
+          this.print(x + " ");
+        this.print(g2[x][y2]);
+        if(y2 -1 < col)
+            this.print(" | ");
+      }
+
+
+      
+    }
+    this.println("");
+    this.println(legend);
+  }
+
+  public void playGame()
+  {
+    this.answer = null;
+    this.header("");
+
+    Territory ourPlayerTerritory =  this.model.getCurrentGame().getPlayerTerritory(this.ourPlayer);
+    Territory opponentTerritory = this.model.getCurrentGame().getPlayerTerritory(this.opponent);
+    int x = ourPlayerTerritory.width;
+    int y = ourPlayerTerritory.height;
+    TerminalView ourPlayerGrid  = new TerminalView(x, y);
+    TerminalView opponentHiddenGrid = new TerminalView(x, y);
+    TerminalView opponentVisibleGrid = new TerminalView(x, y);
+    ourPlayerGrid.init(ourPlayerTerritory.getBoats());
+    opponentHiddenGrid.init(opponentTerritory.getBoats());
+    opponentVisibleGrid.init();
+
+    
+    while(this.model.getCurrentGame().isOver()){
+
+      this.displayGrids(ourPlayerGrid.getGrid(), opponentVisibleGrid.getGrid());
+      this.println("Entrer la ligne puis la colonne de votre coup:");
+      boolean breaker = false;
+      while(!breaker)
+      {
+        synchronized(answerLock)
+        {
+          try {
+            this.answerLock.wait();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+        String input = this.answer;
+        x = 0;
+        y = 0;
+        if(input.length() != 2 || !input.matches("^[0-9][A-Z]$"))
+          this.println("Je n'ai pas compris...");
+        else
+        {
+          x = Character.getNumericValue(input.charAt(0));
+          y = (int) input.charAt(1) - 65;
+          this.println("x:" + x + " y: " + y);
+          boolean success = true;
+          try {
+            this.dispatchEvent(new ShootEvent(this.ourPlayer, this.opponent, new Point(x,y)));
+          } catch (IllegalArgumentException e) {
+            success = false;
+            this.println(e.getMessage());
+          }
+          if(success)
+            breaker = true;
+        }
+      }
+      opponentHiddenGrid.update(x, y);
+      if(opponentHiddenGrid.getGridElement(x, y) == "/")
+        opponentVisibleGrid.setGridElement(x, y, "o");
+      else
+        opponentVisibleGrid.setGridElement(x, y, "x");
+
+      ourPlayerGrid.update(ourPlayerTerritory.getReceivedShots());
+      
+
     }
 
   }
 
-  public void gameOver()
+  /**
+   * Show end game. The player can either go back to the main menu or quit.
+   */
+  private void gameOver()
   {
+    this.answer = null;
     this.header("GAME OVER");
 
-    this.println(this.model.getCurrentGame().getWinner().getName() + "a gangé!");
+    this.println(this.model.getCurrentGame().getWinner().getName() + "a gange!");
     this.println("Bravo!");
+    this.model.getCurrentGame().getWinner().incrementScore();
+    for(Player p : this.model.getCurrentGame().getPlayers())
+    {
+      this.println(p.getName() + " score:" + p.getScore());
+    }
 
     HashMap<String, String> hm = new HashMap<>();
     hm.put("0", "Revenir au menu principal");
     hm.put("1", "Quitter le jeu");
 
-    String input = this.waitingForAnswer(hm);
-    switch (input)
+    this.waitingForAnswer(hm);
+    this.print();
+    boolean breaker = false;
+    String input;
+    while(!breaker)
     {
-      case "0" : this.dispatchEvent(new MainMenuEvent());
-      case "1" : this.dispatchEvent(new ExitEvent());
+      synchronized (answerLock){
+        try {
+          this.answerLock.wait();
+        } catch (InterruptedException e){
+         e.printStackTrace();
+        }
+        input = this.answer;
+        switch (input)
+        {
+          case "0" : breaker = true; this.dispatchEvent(new MainMenuEvent()); break;
+          default : breaker = true; this.dispatchEvent(new ExitEvent()); break;
+        }
+      }
     }
+  }
+
+  public void exitGame()
+  {
+    this.header("Vous allez quitter le jeu.");
+    this.println("Merci d'avoir jouer.");
+    this.println("Merci de nous avoir surveille pendant le tp. zoubi.");
+    this.println("Au revoir!");
+    this.dispatchEvent(new ExitEvent());
+  
   }
 
 }

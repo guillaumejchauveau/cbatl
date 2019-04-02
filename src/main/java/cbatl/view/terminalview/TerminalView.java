@@ -1,5 +1,10 @@
 package cbatl.view.terminalview;
 
+import java.util.Collection;
+import java.util.List;
+
+import cbatl.model.territory.*;
+
 /**
  * Object containing the two grids for the players in the command line Interface
  */
@@ -7,21 +12,21 @@ public class TerminalView {
 
 	private int row;
 	private int col;
-	private String [][] grille1 ;
-	private String [][] grille2 ;
+	private String [][] grid ;
 
 	public TerminalView(int row, int col) {
 		this.row = row;
 		this.col = col;
-		grille1 = new String [this.row+1][this.col+1];
-		grille2 = new String [this.row+1][this.col+1];
-		this.init(grille1);
-		this.init(grille2);
+		grid = new String [this.row][this.col];
 	}
+
+	public int getRow() {return this.row;}
+	public int getCol() {return this.col;}
+	public String[][] getGrid() {return this.grid;}
 
 	/**
 	 * Initializes the grid
-	 */
+	 *//*
 	public void init (String [][] grille) {
 		int x=65;
 		for (int i = 0; i <this.row+1; i++) {
@@ -43,6 +48,64 @@ public class TerminalView {
 			}
 			}
 		}
+	}*/
+
+	public void init()
+	{
+		for(int x = 0; x < this.row; x++)
+		{
+			for(int y = 0; y < this.col; y++)
+			{
+				this.grid[x][y] = ".";
+			}
+		}
+	}
+
+	public void init(Collection<Boat> listBoats)
+	{
+		this.init();
+		System.out.println("Il y a " + listBoats.size());
+		for(Boat b : listBoats)
+		{
+			Collection<Point> listPoints = b.getSectionsPoints();
+			for(Point p : listPoints)
+			{
+				int x = p.x;
+				int y = p.y;
+				this.grid[x][y] = "/" ;
+			}
+		}
+
+	}
+
+	public void update(int x, int y)
+	{
+		if(this.grid[x][y] == "/")
+			this.grid[x][y] = "o";
+		else
+			this.grid[x][y] = "x";
+	}
+
+	public void update(Point shot)
+	{
+		this.update(shot.x, shot.y);
+	}
+
+	public void update(List<Point> listShot)
+	{
+		if(listShot.size() > 0)
+		{
+			Point shot = listShot.get(listShot.size() - 1);
+			int x = shot.x;
+			int y = shot.y;
+			this.update(x, y);
+		}
+	}
+
+	public String getGridElement(int a, int b) {return this.grid[a][b];}
+	public void setGridElement(int x, int y, String symbol)
+	{	
+		this.grid[x][y] = symbol;
 	}
 
 	/**
@@ -52,15 +115,7 @@ public class TerminalView {
 		System.out.println("Player 1");
 		for (int i = 0; i <this.row+1; i++) {
 			for (int j = 0; j < this.col+1; j++) {
-				System.out.print(grille1[i][j]);
-				System.out.print(" | ");
-			}
-			System.out.println("");
-		}
-		System.out.println("Player 2");
-		for (int i = 0; i <this.row+1; i++) {
-			for (int j = 0; j < this.col+1; j++) {
-				System.out.print(grille1[i][j]);
+				System.out.print(grid[i][j]);
 				System.out.print(" | ");
 			}
 			System.out.println("");
@@ -74,6 +129,11 @@ public class TerminalView {
 	 * @param t the grid where the move happens
 	 */
 	public void touch(int x,int y,int t) {
-		grille1[x][y] = "X";
+		if(this.grid[x][y] == " ")
+			this.grid[x][y] = "X";
+		
+		if(this.grid[x][y] == "/")
+			this.grid[x][y] = "0";
+		
 	}
 }

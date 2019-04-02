@@ -36,7 +36,7 @@ public class Game extends EventTarget {
   /**
    * @return
    */
-  public Collection<Player> getPlayers() {
+  public List<Player> getPlayers() {
     return this.players;
   }
 

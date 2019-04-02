@@ -22,7 +22,7 @@ public class Model extends EventTarget {
   public final PlayerManager playerManager;
 
   public Model(PlayerManager playerManager) {
-    this.currentState = State.MAIN_MENU;
+    this.setCurrentState(State.MAIN_MENU);
     this.playerManager = playerManager;
   }
 
