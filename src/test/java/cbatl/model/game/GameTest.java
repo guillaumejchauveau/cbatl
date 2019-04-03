@@ -28,7 +28,6 @@ public class GameTest {
     Assert.assertEquals(2, game.getAlivePlayerCount().intValue());
     game.shoot(p, new Point(0, 0));
     Assert.assertEquals(1, b.getShotSections().size());
-    Assert.assertFalse(game.isPlayerAlive(p));
   }
 
   @Test

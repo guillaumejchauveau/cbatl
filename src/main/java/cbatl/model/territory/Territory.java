@@ -26,25 +26,80 @@ public class Territory extends EventTarget {
     Random random = new Random();
 
     for (Integer boatType : Territory.BOATS_RULE) {
-      Boat.Orientation orientation = Boat.Orientation.values()[random.nextInt(3)];
-      Boat newBoat = new Boat(new Point(random.nextInt(10), random.nextInt(10)), boatType, orientation);
-      while (true) {
-        for (Boat existingBoat : this.getBoats()) {
-          boolean ortho;
-          switch (existingBoat.getOrientation()) {
-            case NORTH:
-            case SOUTH:
-              System.out.println("N");
-              break;
-            case EAST:
-            case WEST:
-              System.out.println("O");
-              break;
-          }
+      Boat newBoat;
+      do {
+        Boat.Orientation orientation = Boat.Orientation.values()[random.nextInt(3)];
+        int lowerHeadXBound = 0;
+        int upperHeadXBound = 10;
+        int lowerHeadYBound = 0;
+        int upperHeadYBound = 10;
+        switch (orientation) {
+          case NORTH:
+            upperHeadYBound = this.height - boatType - 1;
+            break;
+          case EAST:
+            lowerHeadXBound = boatType;
+            break;
+          case SOUTH:
+            lowerHeadYBound = boatType;
+            break;
+          case WEST:
+            upperHeadXBound = this.width - boatType - 1;
+            break;
         }
+
+        Point head = new Point(
+          random.nextInt(upperHeadXBound - lowerHeadXBound) + lowerHeadXBound,
+          random.nextInt(upperHeadYBound - lowerHeadYBound) + lowerHeadYBound
+        );
+        newBoat = new Boat(head, boatType, orientation);
+      } while (this.collision(newBoat));
+      this.addBoat(newBoat);
+    }
+  }
+
+  private Boolean collision(Boat newBoat) {
+    Collection<Point> newBoatPoints = newBoat.getSectionsPoints();
+    Point head = newBoat.getHead();
+
+    switch (newBoat.getOrientation()) {
+      case NORTH:
+        newBoatPoints.add(new Point(head.x, head.y - 1));
+        newBoatPoints.add(new Point(head.x, head.y + newBoat.getLength()));
         break;
+      case EAST:
+        newBoatPoints.add(new Point(head.x + 1, head.y ));
+        newBoatPoints.add(new Point(head.x - newBoat.getLength(), head.y));
+        break;
+      case SOUTH:
+        newBoatPoints.add(new Point(head.x, head.y + 1));
+        newBoatPoints.add(new Point(head.x, head.y - newBoat.getLength()));
+        break;
+      case WEST:
+        newBoatPoints.add(new Point(head.x - 1, head.y));
+        newBoatPoints.add(new Point(head.x + newBoat.getLength(), head.y));
+        break;
+    }
+
+    Collection<Point> newBoatPoints2 = new ArrayList<>(newBoatPoints);
+    for (Point point : newBoatPoints) {
+      if (newBoat.getOrientation().vertical()) {
+        newBoatPoints2.add(new Point(point.x - 1, point.y));
+        newBoatPoints2.add(new Point(point.x + 1, point.y));
+      } else {
+        newBoatPoints2.add(new Point(point.x, point.y - 1));
+        newBoatPoints2.add(new Point(point.x, point.y + 1));
       }
     }
+
+    for (Boat existingBoat : this.getBoats()) {
+      for (Point point : newBoatPoints2) {
+        if (existingBoat.getSectionsPoints().contains(point)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
