@@ -5,27 +5,46 @@ import events.EventTarget;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
  */
 public class Territory extends EventTarget {
-  public final Integer width;
-  public final Integer height;
+  public final static Integer[] BOATS_RULE = {5, 4, 3, 3, 2};
+  public final Integer width = 10;
+  public final Integer height = 10;
   private Collection<Boat> boats;
   private List<Point> receivedShots;
 
   /**
    *
    */
-  public Territory(Integer width, Integer height) {
-    if (width <= 0 || height <= 0) {
-      throw new IllegalArgumentException("Dimensions must be positive");
-    }
-    this.width = width;
-    this.height = height;
+  public Territory() {
     this.boats = new ArrayList<>();
     this.receivedShots = new ArrayList<>();
+    Random random = new Random();
+
+    for (Integer boatType : Territory.BOATS_RULE) {
+      Boat.Orientation orientation = Boat.Orientation.values()[random.nextInt(3)];
+      Boat newBoat = new Boat(new Point(random.nextInt(10), random.nextInt(10)), boatType, orientation);
+      while (true) {
+        for (Boat existingBoat : this.getBoats()) {
+          boolean ortho;
+          switch (existingBoat.getOrientation()) {
+            case NORTH:
+            case SOUTH:
+              System.out.println("N");
+              break;
+            case EAST:
+            case WEST:
+              System.out.println("O");
+              break;
+          }
+        }
+        break;
+      }
+    }
   }
 
   /**
