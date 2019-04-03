@@ -61,8 +61,7 @@ public class Controller {
       if (this.model.getCurrentState() == Model.State.CREATING_GAME) {
         Game game = new Game();
         for (Player player : event.players) {
-          Territory territory = new Territory(10, 10);
-          territory.generateFleet();
+          Territory territory = new Territory();
           game.addPlayer(player, territory);
           if (!this.playerManager.hasPlayer(player)) {
             this.playerManager.registerPlayer(player);
@@ -70,8 +69,7 @@ public class Controller {
         }
 
         if (game.getPlayerCount() < 2) {
-          Territory territory = new Territory(10, 10);
-          territory.generateFleet();
+          Territory territory = new Territory();
           game.addPlayer(new RandomPlayer(), territory);
         }
         this.model.playGame(game);
