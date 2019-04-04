@@ -247,7 +247,8 @@ public class TerminalInterface extends View implements Runnable {
 
 
     this.println("Veuillez entrer le nom du joueur que vous voulez incarner.");
-    while(true)
+    breaker = false;
+    while(!breaker)
     {
 
       String input;
@@ -267,6 +268,7 @@ public class TerminalInterface extends View implements Runnable {
         players.add(this.ourPlayer);
         players.add(this.opponent);
         this.dispatchEvent(new PlayGameEvent(players));
+        breaker = true;
       }
       else
       {
@@ -342,7 +344,7 @@ public class TerminalInterface extends View implements Runnable {
  * @param g1 the first grid to print.
  * @param g2the the second grid to print.
  */
-  public void displayGrids(String[][] g1, String[][] g2)
+  public void displayGrids(String[][] g1, String[][] g2, String[][] g3)
   {
 
     String legend = "Legende: . = case vide" +
@@ -354,16 +356,16 @@ public class TerminalInterface extends View implements Runnable {
     int row = g1[0].length;
     this.println(col + " " + row);
     String spacer = "  ";
-    for(int x = 0; x < row; x++)
+    for(int x = 0; x < col; x++)
     {
 
       if(x == 0)
       {
-        for(int i = 0; i < 2; i++)
+        for(int i = 0; i < 3; i++)
         {
 
           this.print("/ ");
-          for(int x2 = 0; x2 < col; x2++)
+          for(int x2 = 0; x2 < row; x2++)
           {
             this.print((char) (65+x2));
             if(x2 -2 < col)
@@ -375,19 +377,27 @@ public class TerminalInterface extends View implements Runnable {
         }
       }
       this.println("");
-      for(int y1 = 0; y1 < col; y1++){
+      for(int y1 = 0; y1 < row; y1++){
         if(y1 == 0)
         this.print(x + " ");
-        this.print(g1[x][y1]);
-        if(y1 -1 < col)
+        this.print(g1[y1][x]);
+        if(y1 -1 < row)
             this.print(" | ");
       }
       this.print(spacer);
-      for(int y2 = 0; y2 < col; y2++){
+      for(int y2 = 0; y2 < row; y2++){
         if(y2 == 0)
           this.print(x + " ");
-        this.print(g2[x][y2]);
-        if(y2 -1 < col)
+        this.print(g2[y2][x]);
+        if(y2 -1 < row)
+            this.print(" | ");
+      }
+      this.print(spacer);
+      for(int y3 = 0; y3 < row; y3++){
+        if(y3 == 0)
+          this.print(x + " ");
+        this.print(g3[y3][x]);
+        if(y3 -1 < row)
             this.print(" | ");
       }
 
@@ -401,7 +411,7 @@ public class TerminalInterface extends View implements Runnable {
   public void playGame()
   {
     this.answer = null;
-    this.header("");
+    
 
     Territory ourPlayerTerritory =  this.model.getCurrentGame().getPlayerTerritory(this.ourPlayer);
     Territory opponentTerritory = this.model.getCurrentGame().getPlayerTerritory(this.opponent);
@@ -415,9 +425,9 @@ public class TerminalInterface extends View implements Runnable {
     opponentVisibleGrid.init();
 
     
-    while(this.model.getCurrentGame().isOver()){
-
-      this.displayGrids(ourPlayerGrid.getGrid(), opponentVisibleGrid.getGrid());
+    while(!this.model.getCurrentGame().isOver()){
+      this.header("PLAYING GAME");
+      this.displayGrids(ourPlayerGrid.getGrid(), opponentVisibleGrid.getGrid(), opponentHiddenGrid.getGrid());
       this.println("Entrer la ligne puis la colonne de votre coup:");
       boolean breaker = false;
       while(!breaker)
@@ -442,7 +452,7 @@ public class TerminalInterface extends View implements Runnable {
           this.println("x:" + x + " y: " + y);
           boolean success = true;
           try {
-            this.dispatchEvent(new ShootEvent(this.ourPlayer, this.opponent, new Point(x,y)));
+            this.dispatchEvent(new ShootEvent(this.ourPlayer, this.opponent, new Point(y,x)));
           } catch (IllegalArgumentException e) {
             success = false;
             this.println(e.getMessage());
@@ -451,17 +461,16 @@ public class TerminalInterface extends View implements Runnable {
             breaker = true;
         }
       }
-      opponentHiddenGrid.update(x, y);
-      if(opponentHiddenGrid.getGridElement(x, y) == "/")
-        opponentVisibleGrid.setGridElement(x, y, "o");
+      opponentHiddenGrid.update(y, x);
+      if(opponentHiddenGrid.getGridElement(y, x) == "o")
+        opponentVisibleGrid.setGridElement(y, x, "o");
       else
-        opponentVisibleGrid.setGridElement(x, y, "x");
+        opponentVisibleGrid.setGridElement(y, x, "x");
 
       ourPlayerGrid.update(ourPlayerTerritory.getReceivedShots());
-      
-
     }
-
+    this.displayGrids(ourPlayerGrid.getGrid(), opponentVisibleGrid.getGrid(), opponentHiddenGrid.getGrid());
+    this.println(this.model.getCurrentState());
   }
 
   /**

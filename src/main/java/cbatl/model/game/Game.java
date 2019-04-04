@@ -177,6 +177,7 @@ public class Game extends EventTarget {
     if (this.isOver()) {
       this.getWinner().incrementScore();
       this.dispatchEvent(new GameOverEvent());
+      System.out.println("GameOver pelo");
       return;
     }
 
