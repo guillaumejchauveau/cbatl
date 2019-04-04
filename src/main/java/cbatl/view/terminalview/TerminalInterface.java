@@ -509,7 +509,7 @@ public class TerminalInterface extends View implements Runnable {
         switch (input)
         {
           case "0" : breaker = true; this.dispatchEvent(new MainMenuEvent()); break;
-          default : breaker = true; this.dispatchEvent(new ExitEvent()); break;
+          default : breaker = true; this.exitGame(); break;
         }
       }
     }
