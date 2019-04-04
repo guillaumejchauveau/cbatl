@@ -30,7 +30,7 @@ public class GraphicView extends View
     this.end = new EndGame(frame, true);
 
     this.frame.setJMenuBar(this.menu);
-    this.frame.setContentPane(this.end);
+    this.frame.setContentPane(this.launcher);
     this.frame.setLocationRelativeTo(null);
     this.frame.setVisible(true);
   }
