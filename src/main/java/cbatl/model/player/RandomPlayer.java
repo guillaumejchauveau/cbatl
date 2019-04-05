@@ -6,10 +6,11 @@ import cbatl.model.territory.Territory;
 import java.util.Random;
 
 public class RandomPlayer extends Player {
+  public static final String BOT_NAME = "BOT";
   private Random random;
 
   public RandomPlayer() {
-    super("Bot");
+    super(BOT_NAME);
     this.random = new Random();
   }
 

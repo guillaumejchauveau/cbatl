@@ -49,8 +49,6 @@ public class Controller {
    * @param view The view to attach
    */
   public void attachView(View view) {
-    view.attachModel(this.model);
-
     // Game creation events.
     view.addEventListener(CreateGameMenuEvent.class, event -> {
       if (this.model.getCurrentState() == Model.State.MAIN_MENU) {
@@ -61,8 +59,7 @@ public class Controller {
       if (this.model.getCurrentState() == Model.State.CREATING_GAME) {
         Game game = new Game();
         for (Player player : event.players) {
-          Territory territory = new Territory(10, 10);
-          territory.generateFleet();
+          Territory territory = new Territory();
           game.addPlayer(player, territory);
           if (!this.playerManager.hasPlayer(player)) {
             this.playerManager.registerPlayer(player);
@@ -70,8 +67,7 @@ public class Controller {
         }
 
         if (game.getPlayerCount() < 2) {
-          Territory territory = new Territory(10, 10);
-          territory.generateFleet();
+          Territory territory = new Territory();
           game.addPlayer(new RandomPlayer(), territory);
         }
         this.model.playGame(game);
@@ -98,5 +94,7 @@ public class Controller {
       }
       System.exit(0);
     });
+
+    view.attachModel(this.model);
   }
 }

@@ -11,7 +11,6 @@ import cbatl.model.territory.Point;
 import cbatl.model.territory.Territory;
 import events.EventTarget;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,7 @@ import java.util.Map;
 public class Game extends EventTarget {
   private Integer currentPlayerIndex;
   private List<Player> players;
+  private Map<String, Player> playerNames;
   private Map<Player, Territory> playerTerritoryMap;
 
   /**
@@ -29,6 +29,7 @@ public class Game extends EventTarget {
    */
   public Game() {
     this.players = new ArrayList<>();
+    this.playerNames = new HashMap<>();
     this.playerTerritoryMap = new HashMap<>();
     this.currentPlayerIndex = 0;
   }
@@ -36,7 +37,7 @@ public class Game extends EventTarget {
   /**
    * @return
    */
-  public Collection<Player> getPlayers() {
+  public List<Player> getPlayers() {
     return this.players;
   }
 
@@ -76,7 +77,12 @@ public class Game extends EventTarget {
       throw new IllegalArgumentException("Duplicate territory");
     }
     this.players.add(player);
+    this.playerNames.put(player.getName(), player);
     this.playerTerritoryMap.put(player, territory);
+  }
+
+  public Player getPlayer(String playerName) {
+    return this.playerNames.get(playerName);
   }
 
   /**
@@ -165,7 +171,7 @@ public class Game extends EventTarget {
     if (this.isOver()) {
       throw new IllegalStateException();
     }
-    if (!this.hasPlayer(targetedPlayer) || !this.isPlayerAlive(targetedPlayer)) {
+    if (!this.isPlayerAlive(targetedPlayer)) {
       throw new IllegalArgumentException();
     }
     this.dispatchEvent(new CurrentPlayerShotEvent(targetedPlayer, shot));

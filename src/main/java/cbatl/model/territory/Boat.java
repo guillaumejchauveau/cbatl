@@ -66,13 +66,13 @@ public class Boat extends EventTarget {
         yOffset = 1;
         break;
       case EAST:
-        xOffset = 1;
+        xOffset = -1;
         break;
       case SOUTH:
         yOffset = -1;
         break;
       case WEST:
-        xOffset = -1;
+        xOffset = 1;
         break;
     }
     Point head = this.getHead();
@@ -172,9 +172,34 @@ public class Boat extends EventTarget {
    *
    */
   public enum Orientation {
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST
+    NORTH (0),
+    EAST (1),
+    SOUTH (2),
+    WEST (3);
+
+    private final int orientation;
+
+    Orientation(int orientation) {
+      this.orientation = orientation;
+    }
+
+    public Orientation opposed() {
+      switch (this.orientation) {
+        case 0:
+          return SOUTH;
+        case 1:
+          return WEST;
+        case 2:
+          return NORTH;
+        case 3:
+          return EAST;
+        default:
+          return null;
+      }
+    }
+
+    public Boolean vertical() {
+      return this.orientation == 0|| this.orientation == 2;
+    }
   }
 }

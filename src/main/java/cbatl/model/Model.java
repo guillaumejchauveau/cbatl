@@ -22,7 +22,7 @@ public class Model extends EventTarget {
   public final PlayerManager playerManager;
 
   public Model(PlayerManager playerManager) {
-    this.currentState = State.MAIN_MENU;
+    this.setCurrentState(State.MAIN_MENU);
     this.playerManager = playerManager;
   }
 
@@ -32,10 +32,12 @@ public class Model extends EventTarget {
 
   public void playGame(Game game) {
     this.currentGame = game;
-    this.setCurrentState(State.PLAYING_GAME);
+
     this.getCurrentGame().addEventListener(GameOverEvent.class, event -> {
       this.setCurrentState(State.GAME_OVER);
     });
+
+    this.setCurrentState(State.PLAYING_GAME);
   }
 
   public State getCurrentState() {
