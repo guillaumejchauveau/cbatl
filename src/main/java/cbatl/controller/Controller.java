@@ -49,8 +49,6 @@ public class Controller {
    * @param view The view to attach
    */
   public void attachView(View view) {
-    view.attachModel(this.model);
-
     // Game creation events.
     view.addEventListener(CreateGameMenuEvent.class, event -> {
       if (this.model.getCurrentState() == Model.State.MAIN_MENU) {
@@ -96,5 +94,7 @@ public class Controller {
       }
       System.exit(0);
     });
+
+    view.attachModel(this.model);
   }
 }

@@ -11,7 +11,6 @@ import cbatl.model.territory.Point;
 import cbatl.model.territory.Territory;
 import events.EventTarget;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,7 @@ public class Game extends EventTarget {
   /**
    * @return
    */
-  public Collection<Player> getPlayers() {
+  public List<Player> getPlayers() {
     return this.players;
   }
 
