@@ -40,6 +40,7 @@ public class Launcher extends JPanel
     this.titleField.setOpaque(false);
 
     this.play = new JButton("Launch");
+    
     this.play.setBackground(new Color(75, 175, 150));
     this.play.setForeground(new Color(255, 255, 200));
     this.play.setFocusPainted(false);

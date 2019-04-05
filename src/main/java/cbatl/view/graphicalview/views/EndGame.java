@@ -46,13 +46,13 @@ public class EndGame extends JPanel
     this.add(buttonPane);
   }
 
-    public void initLabel ()
-    {
-      if(this.win)
-      {
-        this.label.setText("You won !!");
-      } else {
-        this.label.setText("You lose !!");
-      }
-    }
+  public void initLabel ()
+   {
+     if(this.win)
+     {
+       this.label.setText("You won !!");
+     } else {
+       this.label.setText("You lose !!");
+     }
+   }
 }

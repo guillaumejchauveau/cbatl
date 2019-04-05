@@ -26,4 +26,32 @@ public class MenuBar extends JMenuBar
     this.add(this.fileMenu);
     this.add(this.helpMenu);
   }
+
+  /**
+   * Return the replay button in the menubar
+   * @return
+   */
+  public JMenuItem getReplay()
+  {
+    return this.replay;
+  }
+
+  /**
+   * Return the quit button in the menubar
+   * @return
+   */
+  public JMenuItem getQuit()
+  {
+    return this.quit;
+  }
+
+  /**
+   * Return the help button in the menubar
+   * @return
+   */
+  public JMenuItem getHelp()
+  {
+    return this.help;
+  }
+
 }

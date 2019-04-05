@@ -30,7 +30,7 @@ public class GraphicView extends View
     this.end = new EndGame(frame, true);
 
     this.frame.setJMenuBar(this.menu);
-    this.frame.setContentPane(this.launcher);
+    this.frame.setContentPane(this.config);
     this.frame.setLocationRelativeTo(null);
     this.frame.setVisible(true);
   }
@@ -42,6 +42,24 @@ public class GraphicView extends View
     this.model.addEventListener(StateChangedEvent.class, event -> {
       if (model.getCurrentState() == Model.State.MAIN_MENU) {
         this.frame.setContentPane(this.launcher);
+      }
+    });
+
+    this.model.addEventListener(StateChangedEvent.class, event -> {
+      if (model.getCurrentState() == Model.State.CREATING_GAME) {
+        this.frame.setContentPane(this.config);
+      }
+    });
+
+    this.model.addEventListener(StateChangedEvent.class, event -> {
+      if (model.getCurrentState() == Model.State.PLAYING_GAME) {
+        this.frame.setContentPane(this.game);
+      }
+    });
+
+    this.model.addEventListener(StateChangedEvent.class, event -> {
+      if (model.getCurrentState() == Model.State.GAME_OVER) {
+        this.frame.setContentPane(this.end);
       }
     });
   }
