@@ -1,22 +1,23 @@
 package cbatl.view.terminalview;
 
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Scanner;
-
-import javax.sql.rowset.spi.SyncResolver;
-
-import java.util.ArrayList;
+import cbatl.model.Model;
+import cbatl.model.events.StateChangedEvent;
 import cbatl.model.player.Player;
 import cbatl.model.player.RandomPlayer;
 import cbatl.model.territory.Point;
 import cbatl.model.territory.Territory;
-import cbatl.view.events.*;
-import cbatl.model.*;
-import cbatl.model.events.StateChangedEvent;
 import cbatl.view.View;
+import cbatl.view.events.CreateGameMenuEvent;
+import cbatl.view.events.ExitEvent;
+import cbatl.view.events.MainMenuEvent;
+import cbatl.view.events.PlayGameEvent;
+import cbatl.view.events.ShootEvent;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * Manages the command line Interface
@@ -56,8 +57,7 @@ public class TerminalInterface extends View implements Runnable {
    * {@inheritDoc}
    */
   @Override
-  public void attachModel(Model m)
-  {
+  public void attachModel(Model m) {
     this.model = m;
     this.println("attaching model");
     this.println(model.getCurrentState() == Model.State.MAIN_MENU);
@@ -67,12 +67,20 @@ public class TerminalInterface extends View implements Runnable {
 
   }
 
-  private void whatToDo(){
-    switch(this.model.getCurrentState()){
-      case MAIN_MENU : mainMenu(); break;
-      case CREATING_GAME : createGameMenu(); break;
-      case PLAYING_GAME : playGame(); break;
-      case GAME_OVER : gameOver(); break;
+  private void whatToDo() {
+    switch (this.model.getCurrentState()) {
+      case MAIN_MENU:
+        mainMenu();
+        break;
+      case CREATING_GAME:
+        createGameMenu();
+        break;
+      case PLAYING_GAME:
+        playGame();
+        break;
+      case GAME_OVER:
+        gameOver();
+        break;
     }
   }
 
@@ -91,13 +99,13 @@ public class TerminalInterface extends View implements Runnable {
     this.out.print((Object) ">");
   }
 
-  private void print(Object o)
-  {
+  private void print(Object o) {
     this.out.print(o);
   }
 
   /**
    * Prints in the terminal and then \n.
+   *
    * @param text object to print
    */
   private void println(Object text) {
@@ -106,37 +114,35 @@ public class TerminalInterface extends View implements Runnable {
 
   /**
    * Prints a header for the different menus.
+   *
    * @param head title of the menu to print
    */
-  private void header(String head)
-  {
+  private void header(String head) {
     this.clear();
     this.println("    --BATTLESHIP--" + System.lineSeparator());
-    this.println(head+ System.lineSeparator()+ System.lineSeparator());
+    this.println(head + System.lineSeparator() + System.lineSeparator());
   }
 
   /**
    * Prints the choices the player has to do. Used only for the menus.
-   * @param hm Hash map containing different choices. 
+   *
+   * @param hm Hash map containing different choices.
    */
-  private void waitingForAnswer(HashMap<String, String> hm)
-  {
-    for(int i = 0; i < hm.size(); i++)
-    {
-      this.println("  " + i +". " + hm.get("" +i));
+  private void waitingForAnswer(HashMap<String, String> hm) {
+    for (int i = 0; i < hm.size(); i++) {
+      this.println("  " + i + ". " + hm.get("" + i));
     }
   }
 
-  private void parseInput(String input)
-  {
-    switch (input){
-      case "x" :
+  private void parseInput(String input) {
+    switch (input) {
+      case "x":
         this.exitGame();
         break;
-      case "m" :
+      case "m":
         this.dispatchEvent(new MainMenuEvent());
         break;
-      default :
+      default:
         synchronized (answerLock) {
           this.answer = input;
           this.println("answer = " + input);
@@ -150,42 +156,39 @@ public class TerminalInterface extends View implements Runnable {
   /**
    * Prints Players and their score on screen.
    */
-  private void freePlayers()
-  {
-    try{
+  private void freePlayers() {
+    try {
       Collection<Player> lp = this.model.playerManager.getPlayers();
-      if(lp.size() <= 0)
+      if (lp.size() <= 0)
         this.println("    Aucun joueur reference." + System.lineSeparator());
 
-      else{
-        for(Player p : lp)
-        {
+      else {
+        for (Player p : lp) {
           this.println(p.getName() + " | score: " + p.getScore());
         }
       }
-     
-    }
-    catch(NullPointerException e){
+
+    } catch (NullPointerException e) {
       this.println("    Aucun joueur reference.");
     }
 
   }
 
   /**
-   * Displays BATTLESHIP's Main Menu. From here, the player can leave or go to BATTLESHIP's game menu.
+   * Displays BATTLESHIP's Main Menu. From here, the player can leave or go to BATTLESHIP's game
+   * menu.
    */
-  private void mainMenu()
-  {
+  private void mainMenu() {
     this.header("Menu Principal");
 
     this.println("Joueurs disponibles:");
     this.freePlayers();
-    HashMap<String,String> hm = new HashMap<>();
+    HashMap<String, String> hm = new HashMap<>();
     hm.put("0", "Creer une partie");
     hm.put("1", "Quitter");
 
     this.waitingForAnswer(hm);
-    while(true){
+    while (true) {
       String input;
       synchronized (answerLock) {
         try {
@@ -199,10 +202,12 @@ public class TerminalInterface extends View implements Runnable {
       if (input != null) {
         switch (input) {
           case "0":
-            this.dispatchEvent(new CreateGameMenuEvent()); break;
+            this.dispatchEvent(new CreateGameMenuEvent());
+            break;
           case "1":
-            this.exitGame();break;
-          default :
+            this.exitGame();
+            break;
+          default:
             break;
         }
       }
@@ -211,10 +216,10 @@ public class TerminalInterface extends View implements Runnable {
   }
 
   /**
-   * Displays BATTLESHIP's game menu. Allows the player to create a new payer or to play a game with a chososen player.
+   * Displays BATTLESHIP's game menu. Allows the player to create a new payer or to play a game
+   * with a chososen player.
    */
-  private void createGameMenu()
-  {
+  private void createGameMenu() {
     this.header("Menu du jeu");
     this.println("Joueurs disponibles:");
     this.freePlayers();
@@ -227,7 +232,7 @@ public class TerminalInterface extends View implements Runnable {
     //this.answer = null;
 
     boolean breaker = false;
-    while(!breaker){
+    while (!breaker) {
       String input;
       synchronized (answerLock) {
         try {
@@ -238,9 +243,13 @@ public class TerminalInterface extends View implements Runnable {
         input = this.answer;
       }
       if (input != null) {
-        switch(input){
-          case "0": breaker = true; break;
-          case "1": this.createPlayer(); return;
+        switch (input) {
+          case "0":
+            breaker = true;
+            break;
+          case "1":
+            this.createPlayer();
+            return;
         }
       }
     }
@@ -248,8 +257,7 @@ public class TerminalInterface extends View implements Runnable {
 
     this.println("Veuillez entrer le nom du joueur que vous voulez incarner.");
     breaker = false;
-    while(!breaker)
-    {
+    while (!breaker) {
 
       String input;
       synchronized (answerLock) {
@@ -260,8 +268,7 @@ public class TerminalInterface extends View implements Runnable {
         }
         input = this.answer;
       }
-      if( this.model.playerManager.hasPlayer(input))
-      {
+      if (this.model.playerManager.hasPlayer(input)) {
         ArrayList<Player> players = new ArrayList<>();
         this.ourPlayer = this.model.playerManager.getPlayer(input);
         this.opponent = new RandomPlayer();
@@ -269,9 +276,7 @@ public class TerminalInterface extends View implements Runnable {
         players.add(this.opponent);
         this.dispatchEvent(new PlayGameEvent(players));
         breaker = true;
-      }
-      else
-      {
+      } else {
         this.println("Le jeu ne contient pas ce joueur.");
       }
     }
@@ -281,8 +286,7 @@ public class TerminalInterface extends View implements Runnable {
   /**
    * Creates a player and sends player to model
    */
-  private void createPlayer()
-  {
+  private void createPlayer() {
     this.answer = "";
     this.header("Creer un joueur");
 
@@ -293,147 +297,144 @@ public class TerminalInterface extends View implements Runnable {
 
     this.println("Entrer le nom du nouveau Joueur:");
     boolean breaker = false;
-    while(!breaker)
-    {
-      synchronized (answerLock)
-      {
+    while (!breaker) {
+      synchronized (answerLock) {
         try {
           this.answerLock.wait();
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
       }
-      
+
       String name = this.answer;
       try {
         this.model.playerManager.registerPlayer(new Player(name));
         breaker = true;
       } catch (NullPointerException e) {
         e.printStackTrace();
-      } catch(IllegalArgumentException e) {
-        this.println("Ce nom existe deja.") ;
+      } catch (IllegalArgumentException e) {
+        this.println("Ce nom existe deja.");
       }
     }
 
     this.waitingForAnswer(hm);
     this.answer = "";
     breaker = false;
-    while(!breaker)
-    {
-      synchronized (answerLock)
-      {
+    while (!breaker) {
+      synchronized (answerLock) {
         try {
           this.answerLock.wait();
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
       }
-      
+
       String input = this.answer;
-      switch (input){
-        case "0" : breaker = true; this.dispatchEvent(new MainMenuEvent()); break;
-        case "1" : breaker = true; this.createGameMenu();break;
-        case "2" : breaker = true; this.exitGame(); break;
+      switch (input) {
+        case "0":
+          breaker = true;
+          this.dispatchEvent(new MainMenuEvent());
+          break;
+        case "1":
+          breaker = true;
+          this.createGameMenu();
+          break;
+        case "2":
+          breaker = true;
+          this.exitGame();
+          break;
       }
 
     }
   }
 
-/**
- * Prints the two grid and the associated legend.
- * @param g1 the first grid to print.
- * @param g2the the second grid to print.
- */
-  public void displayGrids(String[][] g1, String[][] g2, String[][] g3)
-  {
+  /**
+   * Prints the two grid and the associated legend.
+   *
+   * @param g1 the first grid to print.
+   * @param g2 the the second grid to print.
+   */
+  public void displayGrids(String[][] g1, String[][] g2, String[][] g3) {
 
     String legend = "Legende: . = case vide" +
-                    "    / = bateau" + System.lineSeparator()+
-                    "         o = touche   " +
-                    "    x = pas touche" + System.lineSeparator();
-    
+      "    / = bateau" + System.lineSeparator() +
+      "         o = touche   " +
+      "    x = pas touche" + System.lineSeparator();
+
     int col = g1.length;
     int row = g1[0].length;
-    this.println(col + " " + row);
     String spacer = "  ";
-    for(int x = 0; x < col; x++)
-    {
+    for (int x = 0; x < col; x++) {
 
-      if(x == 0)
-      {
-        for(int i = 0; i < 3; i++)
-        {
+      if (x == 0) {
+        for (int i = 0; i < 2; i++) {
 
           this.print("/ ");
-          for(int x2 = 0; x2 < row; x2++)
-          {
-            this.print((char) (65+x2));
-            if(x2 -2 < col)
+          for (int x2 = 0; x2 < row; x2++) {
+            this.print((char) (65 + x2));
+            if (x2 - 2 < col)
               this.print(" | ");
-           
+
           }
           this.print("  ");
-          
+
         }
       }
       this.println("");
-      for(int y1 = 0; y1 < row; y1++){
-        if(y1 == 0)
-        this.print(x + " ");
+      for (int y1 = 0; y1 < row; y1++) {
+        if (y1 == 0)
+          this.print(x + " ");
         this.print(g1[y1][x]);
-        if(y1 -1 < row)
-            this.print(" | ");
+        if (y1 - 1 < row)
+          this.print(" | ");
       }
       this.print(spacer);
-      for(int y2 = 0; y2 < row; y2++){
-        if(y2 == 0)
+      for (int y2 = 0; y2 < row; y2++) {
+        if (y2 == 0)
           this.print(x + " ");
         this.print(g2[y2][x]);
-        if(y2 -1 < row)
-            this.print(" | ");
+        if (y2 - 1 < row)
+          this.print(" | ");
       }
+      /**
       this.print(spacer);
-      for(int y3 = 0; y3 < row; y3++){
-        if(y3 == 0)
+      for (int y3 = 0; y3 < row; y3++) {
+        if (y3 == 0)
           this.print(x + " ");
         this.print(g3[y3][x]);
-        if(y3 -1 < row)
-            this.print(" | ");
+        if (y3 - 1 < row)
+          this.print(" | ");
       }
-
-
-      
+      */
     }
     this.println("");
     this.println(legend);
   }
 
-  public void playGame()
-  {
+  public void playGame() {
     this.answer = null;
-    
 
-    Territory ourPlayerTerritory =  this.model.getCurrentGame().getPlayerTerritory(this.ourPlayer);
+
+    Territory ourPlayerTerritory = this.model.getCurrentGame().getPlayerTerritory(this.ourPlayer);
     Territory opponentTerritory = this.model.getCurrentGame().getPlayerTerritory(this.opponent);
     int x = ourPlayerTerritory.width;
     int y = ourPlayerTerritory.height;
-    TerminalView ourPlayerGrid  = new TerminalView(x, y);
+    TerminalView ourPlayerGrid = new TerminalView(x, y);
     TerminalView opponentHiddenGrid = new TerminalView(x, y);
     TerminalView opponentVisibleGrid = new TerminalView(x, y);
     ourPlayerGrid.init(ourPlayerTerritory.getBoats());
     opponentHiddenGrid.init(opponentTerritory.getBoats());
     opponentVisibleGrid.init();
 
-    
-    while(!this.model.getCurrentGame().isOver()){
+
+    while (!this.model.getCurrentGame().isOver()) {
       this.header("PLAYING GAME");
-      this.displayGrids(ourPlayerGrid.getGrid(), opponentVisibleGrid.getGrid(), opponentHiddenGrid.getGrid());
+      this.displayGrids(ourPlayerGrid.getGrid(), opponentVisibleGrid.getGrid(),
+        opponentHiddenGrid.getGrid());
       this.println("Entrer la ligne puis la colonne de votre coup:");
       boolean breaker = false;
-      while(!breaker)
-      {
-        synchronized(answerLock)
-        {
+      while (!breaker) {
+        synchronized (answerLock) {
           try {
             this.answerLock.wait();
           } catch (InterruptedException e) {
@@ -443,49 +444,47 @@ public class TerminalInterface extends View implements Runnable {
         String input = this.answer;
         x = 0;
         y = 0;
-        if(input.length() != 2 || !input.matches("^[0-9][A-Z]$"))
+        if (input.length() != 2 || !input.matches("^[0-9][A-Z]$"))
           this.println("Je n'ai pas compris...");
-        else
-        {
+        else {
           x = Character.getNumericValue(input.charAt(0));
           y = (int) input.charAt(1) - 65;
           this.println("x:" + x + " y: " + y);
           boolean success = true;
           try {
-            this.dispatchEvent(new ShootEvent(this.ourPlayer, this.opponent, new Point(y,x)));
+            this.dispatchEvent(new ShootEvent(this.ourPlayer, this.opponent, new Point(y, x)));
           } catch (IllegalArgumentException e) {
             success = false;
             this.println(e.getMessage());
           }
-          if(success)
+          if (success)
             breaker = true;
         }
       }
       opponentHiddenGrid.update(y, x);
-      if(opponentHiddenGrid.getGridElement(y, x) == "o")
+      if (opponentHiddenGrid.getGridElement(y, x) == "o")
         opponentVisibleGrid.setGridElement(y, x, "o");
       else
         opponentVisibleGrid.setGridElement(y, x, "x");
 
       ourPlayerGrid.update(ourPlayerTerritory.getReceivedShots());
     }
-    this.displayGrids(ourPlayerGrid.getGrid(), opponentVisibleGrid.getGrid(), opponentHiddenGrid.getGrid());
+    this.displayGrids(ourPlayerGrid.getGrid(), opponentVisibleGrid.getGrid(),
+      opponentHiddenGrid.getGrid());
     this.println(this.model.getCurrentState());
   }
 
   /**
    * Show end game. The player can either go back to the main menu or quit.
    */
-  private void gameOver()
-  {
+  private void gameOver() {
     this.answer = null;
     this.header("GAME OVER");
 
-    this.println(this.model.getCurrentGame().getWinner().getName() + "a gange!");
+    this.println(this.model.getCurrentGame().getWinner().getName() + " a gagne!");
     this.println("Bravo!");
     this.model.getCurrentGame().getWinner().incrementScore();
-    for(Player p : this.model.getCurrentGame().getPlayers())
-    {
+    for (Player p : this.model.getCurrentGame().getPlayers()) {
       this.println(p.getName() + " score:" + p.getScore());
     }
 
@@ -497,32 +496,33 @@ public class TerminalInterface extends View implements Runnable {
     this.print();
     boolean breaker = false;
     String input;
-    while(!breaker)
-    {
-      synchronized (answerLock){
+    while (!breaker) {
+      synchronized (answerLock) {
         try {
           this.answerLock.wait();
-        } catch (InterruptedException e){
-         e.printStackTrace();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
         }
         input = this.answer;
-        switch (input)
-        {
-          case "0" : breaker = true; this.dispatchEvent(new MainMenuEvent()); break;
-          default : breaker = true; this.exitGame(); break;
+        switch (input) {
+          case "0":
+            breaker = true;
+            this.dispatchEvent(new MainMenuEvent());
+            break;
+          default:
+            breaker = true;
+            this.exitGame();
+            break;
         }
       }
     }
   }
 
-  public void exitGame()
-  {
+  public void exitGame() {
     this.header("Vous allez quitter le jeu.");
     this.println("Merci d'avoir jouer.");
     this.println("Merci de nous avoir surveille pendant le tp. zoubi.");
     this.println("Au revoir!");
     this.dispatchEvent(new ExitEvent());
-  
   }
-
 }

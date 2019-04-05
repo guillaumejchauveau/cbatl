@@ -11,7 +11,6 @@ import cbatl.model.territory.Point;
 import cbatl.model.territory.Territory;
 import events.EventTarget;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,7 +176,6 @@ public class Game extends EventTarget {
     if (this.isOver()) {
       this.getWinner().incrementScore();
       this.dispatchEvent(new GameOverEvent());
-      System.out.println("GameOver pelo");
       return;
     }
 

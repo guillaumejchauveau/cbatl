@@ -35,11 +35,9 @@ public class Model extends EventTarget {
 
     this.getCurrentGame().addEventListener(GameOverEvent.class, event -> {
       this.setCurrentState(State.GAME_OVER);
-      System.out.println("yo pelo");
     });
-    
+
     this.setCurrentState(State.PLAYING_GAME);
-    
   }
 
   public State getCurrentState() {
