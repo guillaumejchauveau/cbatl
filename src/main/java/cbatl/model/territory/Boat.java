@@ -9,51 +9,36 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
+ * A boat is described by the position of it's bow, it's orientation (where the bow is pointing)
+ * and it's length. The boat has sections. The point of the bow is section 0 and the section
+ * number increases until the stern is reached. Each section corresponds to a {@link Point}. They
+ * can be shot, and if all sections are shot, the boat sinks.
  */
 public class Boat extends EventTarget {
-  private Point head;
+  private Point bow;
   private Integer length;
   private Orientation orientation;
   private Set<Integer> shotSections;
 
-  /**
-   * @param head
-   * @param length
-   * @param orientation
-   */
-  public Boat(Point head, Integer length, Orientation orientation) {
-    this.head = head;
+  public Boat(Point bow, Integer length, Orientation orientation) {
+    this.bow = bow;
     this.length = length;
     this.orientation = orientation;
     this.shotSections = new HashSet<>();
   }
 
-  /**
-   * @return
-   */
-  public Point getHead() {
-    return this.head;
+  public Point getBow() {
+    return this.bow;
   }
 
-  /**
-   * @return
-   */
   public Integer getLength() {
     return this.length;
   }
 
-  /**
-   * @return
-   */
   public Orientation getOrientation() {
     return this.orientation;
   }
 
-  /**
-   * @param section
-   * @return
-   */
   public Point translateSectionToPoint(Integer section) {
     if (section < 0 || section >= this.getLength()) {
       throw new IllegalArgumentException("Section number is illegal");
@@ -75,17 +60,13 @@ public class Boat extends EventTarget {
         xOffset = 1;
         break;
     }
-    Point head = this.getHead();
-    return new Point(head.x + xOffset * section, head.y + yOffset * section);
+    Point bow = this.getBow();
+    return new Point(bow.x + xOffset * section, bow.y + yOffset * section);
   }
 
-  /**
-   * @param point
-   * @return
-   */
   public Integer translatePointToSection(Point point) {
-    int xDelta = this.getHead().xDelta(point);
-    int yDelta = this.getHead().yDelta(point);
+    int xDelta = this.getBow().xDelta(point);
+    int yDelta = this.getBow().yDelta(point);
     Integer section = null;
     switch (this.getOrientation()) {
       case NORTH:
@@ -107,9 +88,6 @@ public class Boat extends EventTarget {
     return section;
   }
 
-  /**
-   * @return
-   */
   public Collection<Integer> getSections() {
     Collection<Integer> sections = new ArrayList<>();
     for (int i = 0; i < this.getLength(); i++) {
@@ -118,9 +96,6 @@ public class Boat extends EventTarget {
     return sections;
   }
 
-  /**
-   * @return
-   */
   public Collection<Point> getSectionsPoints() {
     Collection<Point> points = new ArrayList<>();
     for (Integer section : this.getSections()) {
@@ -129,16 +104,10 @@ public class Boat extends EventTarget {
     return points;
   }
 
-  /**
-   * @return
-   */
   public Collection<Integer> getShotSections() {
     return this.shotSections;
   }
 
-  /**
-   * @return
-   */
   public Collection<Point> getShotSectionsPoints() {
     Collection<Point> points = new ArrayList<>();
     for (Integer section : this.getShotSections()) {
@@ -147,16 +116,10 @@ public class Boat extends EventTarget {
     return points;
   }
 
-  /**
-   * @return
-   */
   public Boolean isSunk() {
     return this.getShotSections().size() == this.getLength();
   }
 
-  /**
-   * @param section
-   */
   public void addShotSection(Integer section) {
     if (section < 0 || section >= this.getLength()) {
       throw new IllegalArgumentException("Section number is illegal");
@@ -168,14 +131,11 @@ public class Boat extends EventTarget {
     }
   }
 
-  /**
-   *
-   */
   public enum Orientation {
-    NORTH (0),
-    EAST (1),
-    SOUTH (2),
-    WEST (3);
+    NORTH(0),
+    EAST(1),
+    SOUTH(2),
+    WEST(3);
 
     private final int orientation;
 
@@ -199,7 +159,7 @@ public class Boat extends EventTarget {
     }
 
     public Boolean vertical() {
-      return this.orientation == 0|| this.orientation == 2;
+      return this.orientation == 0 || this.orientation == 2;
     }
   }
 }

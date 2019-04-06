@@ -1,13 +1,13 @@
 package cbatl;
 
 import cbatl.controller.Controller;
-import cbatl.view.terminalview.TerminalInterface;
+import cbatl.view.terminalview.TerminalView;
 import java.io.File;
 
 public class App {
   public static void main(String[] args) {
     File playerFile = new File("players.csv");
-    Controller controller = new Controller(playerFile);
-    controller.attachView(new TerminalInterface());
+    Controller controller = new Controller(playerFile, args.length != 0);
+    controller.attachView(new TerminalView());
   }
 }
