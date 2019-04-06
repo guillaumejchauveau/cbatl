@@ -22,17 +22,10 @@ public class PlayerManager extends EventTarget {
    */
   private final Map<String, Player> registeredPlayers;
 
-  /**
-   *
-   */
   public PlayerManager() {
     this.registeredPlayers = new HashMap<>();
   }
 
-  /**
-   * @param fileReader
-   * @return
-   */
   public static PlayerManager createFromFile(FileReader fileReader) throws IOException {
     PlayerManager playerManager = new PlayerManager();
     CSVParser parser = new CSVParser(fileReader, CSVFormat.DEFAULT.withHeader());
@@ -117,9 +110,6 @@ public class PlayerManager extends EventTarget {
     this.dispatchEvent(new PlayerListUpdatedEvent());
   }
 
-  /**
-   * @param fileWriter
-   */
   public void saveToFile(FileWriter fileWriter) throws IOException {
     CSVPrinter printer = new CSVPrinter(fileWriter, CSVFormat.DEFAULT);
     printer.printRecord("Name", "Score");

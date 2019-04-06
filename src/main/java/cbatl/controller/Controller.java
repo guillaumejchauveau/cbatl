@@ -30,7 +30,7 @@ public class Controller {
    *
    * @param playerFile The file used to save players
    */
-  public Controller(File playerFile) {
+  public Controller(File playerFile, Boolean cheat) {
     this.playerFile = playerFile;
     try {
       this.playerFile.createNewFile();
@@ -40,7 +40,7 @@ public class Controller {
         "échouée.");
       this.playerManager = new PlayerManager();
     }
-    this.model = new Model(this.playerManager);
+    this.model = new Model(this.playerManager, cheat);
   }
 
   /**
@@ -60,6 +60,7 @@ public class Controller {
         Game game = new Game();
         for (Player player : event.players) {
           Territory territory = new Territory();
+          territory.generateFleet();
           game.addPlayer(player, territory);
           if (!this.playerManager.hasPlayer(player)) {
             this.playerManager.registerPlayer(player);
@@ -68,6 +69,7 @@ public class Controller {
 
         if (game.getPlayerCount() < 2) {
           Territory territory = new Territory();
+          territory.generateFleet();
           game.addPlayer(new RandomPlayer(), territory);
         }
         this.model.playGame(game);
@@ -76,8 +78,7 @@ public class Controller {
 
     // In-game events.
     view.addEventListener(ShootEvent.class, event -> {
-      if (this.model.getCurrentState() == Model.State.PLAYING_GAME &&
-        event.player == this.model.getCurrentGame().getCurrentPlayer()) {
+      if (this.model.getCurrentState() == Model.State.PLAYING_GAME) {
         this.model.getCurrentGame().shoot(event.targetedPlayer, event.shot);
       }
     });
@@ -94,7 +95,6 @@ public class Controller {
       }
       System.exit(0);
     });
-
     view.attachModel(this.model);
   }
 }

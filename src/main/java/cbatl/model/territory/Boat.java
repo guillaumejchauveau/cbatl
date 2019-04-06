@@ -8,20 +8,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- *
- */
 public class Boat extends EventTarget {
   private Point head;
   private Integer length;
   private Orientation orientation;
   private Set<Integer> shotSections;
 
-  /**
-   * @param head
-   * @param length
-   * @param orientation
-   */
   public Boat(Point head, Integer length, Orientation orientation) {
     this.head = head;
     this.length = length;
@@ -29,31 +21,18 @@ public class Boat extends EventTarget {
     this.shotSections = new HashSet<>();
   }
 
-  /**
-   * @return
-   */
   public Point getHead() {
     return this.head;
   }
 
-  /**
-   * @return
-   */
   public Integer getLength() {
     return this.length;
   }
 
-  /**
-   * @return
-   */
   public Orientation getOrientation() {
     return this.orientation;
   }
 
-  /**
-   * @param section
-   * @return
-   */
   public Point translateSectionToPoint(Integer section) {
     if (section < 0 || section >= this.getLength()) {
       throw new IllegalArgumentException("Section number is illegal");
@@ -79,10 +58,6 @@ public class Boat extends EventTarget {
     return new Point(head.x + xOffset * section, head.y + yOffset * section);
   }
 
-  /**
-   * @param point
-   * @return
-   */
   public Integer translatePointToSection(Point point) {
     int xDelta = this.getHead().xDelta(point);
     int yDelta = this.getHead().yDelta(point);
@@ -107,9 +82,6 @@ public class Boat extends EventTarget {
     return section;
   }
 
-  /**
-   * @return
-   */
   public Collection<Integer> getSections() {
     Collection<Integer> sections = new ArrayList<>();
     for (int i = 0; i < this.getLength(); i++) {
@@ -118,9 +90,6 @@ public class Boat extends EventTarget {
     return sections;
   }
 
-  /**
-   * @return
-   */
   public Collection<Point> getSectionsPoints() {
     Collection<Point> points = new ArrayList<>();
     for (Integer section : this.getSections()) {
@@ -129,16 +98,10 @@ public class Boat extends EventTarget {
     return points;
   }
 
-  /**
-   * @return
-   */
   public Collection<Integer> getShotSections() {
     return this.shotSections;
   }
 
-  /**
-   * @return
-   */
   public Collection<Point> getShotSectionsPoints() {
     Collection<Point> points = new ArrayList<>();
     for (Integer section : this.getShotSections()) {
@@ -147,16 +110,10 @@ public class Boat extends EventTarget {
     return points;
   }
 
-  /**
-   * @return
-   */
   public Boolean isSunk() {
     return this.getShotSections().size() == this.getLength();
   }
 
-  /**
-   * @param section
-   */
   public void addShotSection(Integer section) {
     if (section < 0 || section >= this.getLength()) {
       throw new IllegalArgumentException("Section number is illegal");
@@ -168,9 +125,6 @@ public class Boat extends EventTarget {
     }
   }
 
-  /**
-   *
-   */
   public enum Orientation {
     NORTH (0),
     EAST (1),
