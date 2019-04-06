@@ -7,6 +7,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * A collection of boats in a plane. Each point of the territory can be shot, and if a boat is
+ * that point, the boat is shot.
+ */
 public class Territory extends EventTarget {
   private final static Integer[] BOATS_RULE = {5, 4, 3, 3, 2};
   public final Integer width = 10;
@@ -20,41 +24,8 @@ public class Territory extends EventTarget {
   }
 
   private Boolean collision(Boat newBoat) {
-    Collection<Point> newBoatPoints = newBoat.getSectionsPoints();
-    Point head = newBoat.getHead();
-
-    switch (newBoat.getOrientation()) {
-      case NORTH:
-        newBoatPoints.add(new Point(head.x, head.y - 1));
-        newBoatPoints.add(new Point(head.x, head.y + newBoat.getLength()));
-        break;
-      case EAST:
-        newBoatPoints.add(new Point(head.x + 1, head.y ));
-        newBoatPoints.add(new Point(head.x - newBoat.getLength(), head.y));
-        break;
-      case SOUTH:
-        newBoatPoints.add(new Point(head.x, head.y + 1));
-        newBoatPoints.add(new Point(head.x, head.y - newBoat.getLength()));
-        break;
-      case WEST:
-        newBoatPoints.add(new Point(head.x - 1, head.y));
-        newBoatPoints.add(new Point(head.x + newBoat.getLength(), head.y));
-        break;
-    }
-
-    Collection<Point> newBoatPoints2 = new ArrayList<>(newBoatPoints);
-    for (Point point : newBoatPoints) {
-      if (newBoat.getOrientation().vertical()) {
-        newBoatPoints2.add(new Point(point.x - 1, point.y));
-        newBoatPoints2.add(new Point(point.x + 1, point.y));
-      } else {
-        newBoatPoints2.add(new Point(point.x, point.y - 1));
-        newBoatPoints2.add(new Point(point.x, point.y + 1));
-      }
-    }
-
     for (Boat existingBoat : this.getBoats()) {
-      for (Point point : newBoatPoints2) {
+      for (Point point : newBoat.getSectionsPoints()) {
         if (existingBoat.getSectionsPoints().contains(point)) {
           return true;
         }
@@ -63,9 +34,10 @@ public class Territory extends EventTarget {
     return false;
   }
 
+  /**
+   * Automatically generates boats for the territory based on rules.
+   */
   public void generateFleet() {
-    this.addBoat(new Boat(new Point(0, 0), 2, Boat.Orientation.NORTH));
-    /*
     Random random = new Random();
 
     for (Integer boatType : Territory.BOATS_RULE) {
@@ -98,7 +70,7 @@ public class Territory extends EventTarget {
         newBoat = new Boat(head, boatType, orientation);
       } while (this.collision(newBoat));
       this.addBoat(newBoat);
-    }*/
+    }
   }
 
   public Boolean isPointInTerritory(Point point) {
@@ -116,7 +88,7 @@ public class Territory extends EventTarget {
 
   public void addBoat(Boat boat) {
     if (
-      !this.isPointInTerritory(boat.getHead()) ||
+      !this.isPointInTerritory(boat.getBow()) ||
         !this.isPointInTerritory(boat.translateSectionToPoint(boat.getLength() - 1))
     ) {
       throw new IllegalArgumentException("Boat is not in territory");
@@ -124,6 +96,12 @@ public class Territory extends EventTarget {
     this.boats.add(boat);
   }
 
+  /**
+   * Processes an incoming shot.
+   *
+   * @param shot The shot
+   * @return The boat shot if any
+   */
   public Boat receiveShot(Point shot) {
     if (!this.isPointInTerritory(shot)) {
       throw new IllegalArgumentException("Shot is not in territory");

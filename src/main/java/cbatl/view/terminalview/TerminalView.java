@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * A view using standard input and output.
+ */
 public class TerminalView extends View {
   private Model model;
   private Map<Player, TerritoryGrid> grids;
@@ -44,6 +47,9 @@ public class TerminalView extends View {
     this.updateState();
   }
 
+  /**
+   * State change callback. Delegates to specialized methods for each state.
+   */
   private void updateState() {
     switch (this.model.getCurrentState()) {
       case MAIN_MENU:
@@ -77,6 +83,12 @@ public class TerminalView extends View {
     System.out.flush();
   }
 
+  /**
+   * Standard input callback. Delegates to specialized methods for each state or takes simple
+   * decisions.
+   *
+   * @param input The data from the standard input
+   */
   private void parseInput(String input) {
     switch (input) {
       case "x":
@@ -115,14 +127,15 @@ public class TerminalView extends View {
       System.out.println(player.getName() + " : " + player.getScore());
     }
     System.out.println();
-    System.out.println("Vous pouvez a tout moment quitter avec 'x' ou revenir au menu principal avec 'm'.");
+    System.out.println("Vous pouvez a tout moment quitter avec 'x' ou revenir au menu principal " +
+      "avec 'm'.");
     System.out.println("Faites 'entree' pour commencer une partie.");
   }
 
   private void printCreateGameMenu() {
     this.clear();
     System.out.println("CREATION PARTIE");
-    System.out.println("--------------");
+    System.out.println("---------------");
     System.out.println();
 
     System.out.println("Entrez le nom des joueurs pour la partie (alice bob jane...)");
@@ -146,6 +159,9 @@ public class TerminalView extends View {
     this.dispatchEvent(new PlayGameEvent(players));
   }
 
+  /**
+   * Prints the current game's grids.
+   */
   private void printGrids() {
     int maxGridHeight = 0;
 
@@ -199,9 +215,17 @@ public class TerminalView extends View {
     );
   }
 
+  /**
+   * Prints an horizontal line of a specific grid.
+   *
+   * @param player  The player associated with the grid
+   * @param y       The line number
+   * @param visible Defines if all the boats should be displayed
+   */
   private void printGridFrame(Player player, int y, boolean visible) {
     TerritoryGrid grid = this.grids.get(player);
     boolean dead = !this.model.getCurrentGame().isPlayerAlive(player);
+    // Enforce 2 characters wide line number.
     if (y + 1 < 10) {
       System.out.print(" " + (y + 1));
     } else {
@@ -221,6 +245,11 @@ public class TerminalView extends View {
     System.out.print(spacer);
   }
 
+  /**
+   * Prints the name corresponding to a grid.
+   *
+   * @param player The player associated with the grid
+   */
   private void printGridName(Player player) {
     TerritoryGrid grid = this.grids.get(player);
     int gridTotalWidth = 2 + spacer.length() + (1 + spacer.length()) * grid.getWidth();
@@ -253,7 +282,8 @@ public class TerminalView extends View {
   private void printPlayingGame() {
     this.clear();
     this.printGrids();
-
+    System.out.println();
+    System.out.println("Au tour de " + this.model.getCurrentGame().getCurrentPlayer().getName());
     System.out.println();
     if (this.model.getCurrentGame().getAlivePlayers().size() == 2) {
       System.out.println("Entrez les coordonnees pour tirer (A1) :");
@@ -273,8 +303,11 @@ public class TerminalView extends View {
     String point;
     Player targetedPlayer = null;
 
+    // Determines the targeted player.
+    // If there are only 2 remaining players, chooses automatically.
     if (currentGame.getAlivePlayers().size() == 2) {
       if (inputs.length > 2) {
+        System.out.println("Trop de choses donnees");
         return;
       }
       for (Player player : currentGame.getAlivePlayers()) {
@@ -283,19 +316,20 @@ public class TerminalView extends View {
         }
       }
       point = inputs[inputs.length == 1 ? 0 : 1];
-    } else {
+    } else { // If there are more than 2 remaining players, parses the provided input.
       if (inputs.length != 2) {
+        System.out.println("Il faut indiquer deux choses");
         return;
       }
       try {
-        targetedPlayer = currentGame.getPlayers().get(Integer.parseInt(inputs[0]));
-      } catch (NumberFormatException e) {
         try {
+          targetedPlayer = currentGame.getPlayers().get(Integer.parseInt(inputs[0]));
+        } catch (NumberFormatException e) {
           targetedPlayer = currentGame.getPlayer(inputs[0]);
-        } catch (Exception e2) {
-          System.out.println("Ce joueur n'existe pas");
-          return;
         }
+      } catch (Exception e) {
+        System.out.println("Ce joueur n'existe pas");
+        return;
       }
 
       if (targetedPlayer == currentGame.getCurrentPlayer()) {
@@ -308,26 +342,20 @@ public class TerminalView extends View {
       }
       point = inputs[1];
     }
-    point = point.toUpperCase();
-    int x;
-    int y;
-    try {
-      x = point.charAt(1) - 'A';
-      y = Integer.parseInt(Character.toString(point.charAt(0))) - 1;
-    } catch (NumberFormatException e) {
-      try {
-        x = point.charAt(0) - 'A';
-        y = Integer.parseInt(Character.toString(point.charAt(1))) - 1;
-      } catch (NumberFormatException e2) {
-        System.out.println("Coordonnees incorrectes.");
-        return;
-      }
-    } catch (IndexOutOfBoundsException e) {
-      System.out.println("Coordonnees incorrectes.");
-      return;
-    }
 
+    // Determines the shot point.
+    point = point.toUpperCase();
     try {
+      int x;
+      int y;
+      // Tries letter first.
+      if (point.charAt(0) >= 'A') {
+        x = point.charAt(0) - 'A';
+        y = Integer.parseInt(point.substring(1)) - 1;
+      } else { // Tries letter second.
+        x = point.charAt(point.length() - 1) - 'A';
+        y = Integer.parseInt(point.substring(0, point.length() - 1)) - 1;
+      }
       this.dispatchEvent(new ShootEvent(
         targetedPlayer,
         new Point(x, y)
@@ -338,6 +366,7 @@ public class TerminalView extends View {
   }
 
   private void printGameOver() {
+    this.clear();
     this.printGrids();
 
     System.out.println();

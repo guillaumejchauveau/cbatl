@@ -29,6 +29,7 @@ public class Controller {
    * Initializes the controller with a file to save players.
    *
    * @param playerFile The file used to save players
+   * @param cheat      Cheat mode activation
    */
   public Controller(File playerFile, Boolean cheat) {
     this.playerFile = playerFile;

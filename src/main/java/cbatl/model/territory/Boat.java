@@ -8,21 +8,27 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A boat is described by the position of it's bow, it's orientation (where the bow is pointing)
+ * and it's length. The boat has sections. The point of the bow is section 0 and the section
+ * number increases until the stern is reached. Each section corresponds to a {@link Point}. They
+ * can be shot, and if all sections are shot, the boat sinks.
+ */
 public class Boat extends EventTarget {
-  private Point head;
+  private Point bow;
   private Integer length;
   private Orientation orientation;
   private Set<Integer> shotSections;
 
-  public Boat(Point head, Integer length, Orientation orientation) {
-    this.head = head;
+  public Boat(Point bow, Integer length, Orientation orientation) {
+    this.bow = bow;
     this.length = length;
     this.orientation = orientation;
     this.shotSections = new HashSet<>();
   }
 
-  public Point getHead() {
-    return this.head;
+  public Point getBow() {
+    return this.bow;
   }
 
   public Integer getLength() {
@@ -54,13 +60,13 @@ public class Boat extends EventTarget {
         xOffset = 1;
         break;
     }
-    Point head = this.getHead();
-    return new Point(head.x + xOffset * section, head.y + yOffset * section);
+    Point bow = this.getBow();
+    return new Point(bow.x + xOffset * section, bow.y + yOffset * section);
   }
 
   public Integer translatePointToSection(Point point) {
-    int xDelta = this.getHead().xDelta(point);
-    int yDelta = this.getHead().yDelta(point);
+    int xDelta = this.getBow().xDelta(point);
+    int yDelta = this.getBow().yDelta(point);
     Integer section = null;
     switch (this.getOrientation()) {
       case NORTH:
@@ -126,10 +132,10 @@ public class Boat extends EventTarget {
   }
 
   public enum Orientation {
-    NORTH (0),
-    EAST (1),
-    SOUTH (2),
-    WEST (3);
+    NORTH(0),
+    EAST(1),
+    SOUTH(2),
+    WEST(3);
 
     private final int orientation;
 
@@ -153,7 +159,7 @@ public class Boat extends EventTarget {
     }
 
     public Boolean vertical() {
-      return this.orientation == 0|| this.orientation == 2;
+      return this.orientation == 0 || this.orientation == 2;
     }
   }
 }

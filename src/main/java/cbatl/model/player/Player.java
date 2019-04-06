@@ -3,6 +3,9 @@ package cbatl.model.player;
 import cbatl.model.events.player.PlayerUpdatedEvent;
 import events.EventTarget;
 
+/**
+ * A player. The player's score is it's victory count.
+ */
 public class Player extends EventTarget {
   private String name;
   private Integer score;
