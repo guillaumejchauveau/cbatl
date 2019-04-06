@@ -1,138 +1,376 @@
 package cbatl.view.terminalview;
 
-import cbatl.model.territory.Boat;
+import cbatl.model.Model;
+import cbatl.model.events.StateChangedEvent;
+import cbatl.model.events.game.CurrentPlayerChangedEvent;
+import cbatl.model.game.Game;
+import cbatl.model.player.Player;
 import cbatl.model.territory.Point;
-import java.util.Collection;
-import java.util.List;
+import cbatl.model.territory.Territory;
+import cbatl.view.View;
+import cbatl.view.events.CreateGameMenuEvent;
+import cbatl.view.events.ExitEvent;
+import cbatl.view.events.MainMenuEvent;
+import cbatl.view.events.PlayGameEvent;
+import cbatl.view.events.ShootEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 /**
- * Object containing the two grids for the players in the command line Interface
+ * A view using standard input and output.
  */
-public class TerminalView {
+public class TerminalView extends View {
+  private Model model;
+  private Map<Player, TerritoryGrid> grids;
+  private final static String spacer = "  ";
 
-  private int row;
-  private int col;
-  private String[][] grid;
-
-  public TerminalView(int row, int col) {
-    this.row = row;
-    this.col = col;
-    grid = new String[this.row][this.col];
-  }
-
-  public int getRow() {
-    return this.row;
-  }
-
-  public int getCol() {
-    return this.col;
-  }
-
-  public String[][] getGrid() {
-    return this.grid;
+  public TerminalView() {
+    Thread thread = new Thread(() -> {
+      Scanner scanner = new Scanner(System.in);
+      while (!Thread.interrupted()) {
+        String input = scanner.nextLine();
+        parseInput(input);
+      }
+    });
+    thread.start();
   }
 
   /**
-   * Initializes the grid
-   *//*
-	public void init (String [][] grille) {
-		int x=65;
-		for (int i = 0; i <this.row+1; i++) {
-			for (int j = 0; j < this.col+1; j++) {
-			if (i==0) {
-				if (j==0) grille[i][j]=" /";
-				else {
-					char c =(char) x;
-					grille[i][j]= "" + c;
-					x++;
-				}
-			}
-			else if (j==0) {
-				if (i<10 ) grille[i][j]=" "+i;
-				else grille[i][j]=""+i;
-			}
-			else {
-				grille[i][j]=" ";
-			}
-			}
-		}
-	}*/
-  public void init() {
-    for (int x = 0; x < this.row; x++) {
-      for (int y = 0; y < this.col; y++) {
-        this.grid[x][y] = ".";
-      }
-    }
-  }
-
-  public void init(Collection<Boat> listBoats) {
-    this.init();
-    for (Boat b : listBoats) {
-      Collection<Point> listPoints = b.getSectionsPoints();
-      for (Point p : listPoints) {
-        int x = p.x;
-        int y = p.y;
-        this.grid[x][y] = "/";
-      }
-    }
-
-  }
-
-  public void update(int x, int y) {
-    if (this.grid[x][y] == "/")
-      this.grid[x][y] = "o";
-    else
-      this.grid[x][y] = "x";
-  }
-
-  public void update(Point shot) {
-    this.update(shot.x, shot.y);
-  }
-
-  public void update(List<Point> listShot) {
-    if (listShot.size() > 0) {
-      Point shot = listShot.get(listShot.size() - 1);
-      int x = shot.x;
-      int y = shot.y;
-      this.update(x, y);
-    }
-  }
-
-  public String getGridElement(int a, int b) {
-    return this.grid[a][b];
-  }
-
-  public void setGridElement(int x, int y, String symbol) {
-    this.grid[x][y] = symbol;
-  }
-
-  /**
-   * Prints grids in command line Interface
+   * {@inheritDoc}
    */
-  public void showGrille() {
-    System.out.println("Player 1");
-    for (int i = 0; i < this.row + 1; i++) {
-      for (int j = 0; j < this.col + 1; j++) {
-        System.out.print(grid[i][j]);
-        System.out.print(" | ");
-      }
-      System.out.println("");
-    }
+  @Override
+  public void attachModel(Model model) {
+    this.model = model;
+    this.model.addEventListener(StateChangedEvent.class, event -> this.updateState());
+    this.updateState();
   }
 
   /**
-   * Change the grid of the player depending of a move coordinate
+   * State change callback. Delegates to specialized methods for each state.
+   */
+  private void updateState() {
+    switch (this.model.getCurrentState()) {
+      case MAIN_MENU:
+        printMainMenu();
+        break;
+      case CREATING_GAME:
+        printCreateGameMenu();
+        break;
+      case PLAYING_GAME:
+        Game currentGame = this.model.getCurrentGame();
+
+        this.grids = new HashMap<>();
+        for (Player player : currentGame.getPlayers()) {
+          Territory territory = currentGame.getPlayerTerritory(player);
+          this.grids.put(player, new TerritoryGrid(territory));
+        }
+
+        currentGame.addEventListener(CurrentPlayerChangedEvent.class, event -> {
+          printPlayingGame();
+        });
+        printPlayingGame();
+        break;
+      case GAME_OVER:
+        printGameOver();
+        break;
+    }
+  }
+
+  private void clear() {
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
+  }
+
+  /**
+   * Standard input callback. Delegates to specialized methods for each state or takes simple
+   * decisions.
    *
-   * @param x line of the move
-   * @param y row of the move
-   * @param t the grid where the move happens
+   * @param input The data from the standard input
    */
-  public void touch(int x, int y, int t) {
-    if (this.grid[x][y] == " ")
-      this.grid[x][y] = "X";
+  private void parseInput(String input) {
+    switch (input) {
+      case "x":
+        this.dispatchEvent(new ExitEvent());
+        break;
+      case "m":
+        this.dispatchEvent(new MainMenuEvent());
+        break;
+      default:
+        switch (this.model.getCurrentState()) {
+          case MAIN_MENU:
+            this.dispatchEvent(new CreateGameMenuEvent());
+            break;
+          case CREATING_GAME:
+            this.handleCreateGameMenu(input);
+            break;
+          case PLAYING_GAME:
+            this.handlePlayingGame(input);
+            break;
+          case GAME_OVER:
+            this.dispatchEvent(new MainMenuEvent());
+            break;
+        }
+        break;
+    }
+  }
 
-    if (this.grid[x][y] == "/")
-      this.grid[x][y] = "0";
+  private void printMainMenu() {
+    this.clear();
+    System.out.println("MENU PRINCIPAL");
+    System.out.println("--------------");
+    System.out.println();
 
+    System.out.println("Tableau des scores :");
+    for (Player player : this.model.playerManager.getPlayers()) {
+      System.out.println(player.getName() + " : " + player.getScore());
+    }
+    System.out.println();
+    System.out.println("Vous pouvez a tout moment quitter avec 'x' ou revenir au menu principal " +
+      "avec 'm'.");
+    System.out.println("Faites 'entree' pour commencer une partie.");
+  }
+
+  private void printCreateGameMenu() {
+    this.clear();
+    System.out.println("CREATION PARTIE");
+    System.out.println("---------------");
+    System.out.println();
+
+    System.out.println("Entrez le nom des joueurs pour la partie (alice bob jane...)");
+    System.out.println("Un bot sera ajoute si il n'y a qu'un seul joueur");
+  }
+
+  private void handleCreateGameMenu(String input) {
+    ArrayList<Player> players = new ArrayList<>();
+    for (String playerName : input.split(" ")) {
+      if (playerName.length() == 0) {
+        continue;
+      }
+      Player player;
+      if (this.model.playerManager.hasPlayer(playerName)) {
+        player = this.model.playerManager.getPlayer(playerName);
+      } else {
+        player = new Player(playerName);
+      }
+      players.add(player);
+    }
+    this.dispatchEvent(new PlayGameEvent(players));
+  }
+
+  /**
+   * Prints the current game's grids.
+   */
+  private void printGrids() {
+    int maxGridHeight = 0;
+
+    Game currentGame = this.model.getCurrentGame();
+    for (Player player : currentGame.getPlayers()) {
+      TerritoryGrid grid = this.grids.get(player);
+      if (grid.getHeight() > maxGridHeight) {
+        maxGridHeight = grid.getHeight();
+      }
+
+      System.out.print("  " + spacer);
+
+      for (char xChar = 'A'; xChar < 'A' + grid.getWidth(); xChar++) {
+        System.out.print(xChar + spacer);
+      }
+      System.out.print(spacer);
+    }
+    System.out.println();
+
+    for (int y = 0; y < maxGridHeight; y++) {
+      // Display current player grid.
+      this.printGridFrame(currentGame.getCurrentPlayer(), y, true);
+
+      // Display other players grid.
+      for (Player player : currentGame.getPlayers()) {
+        if (player == currentGame.getCurrentPlayer()) {
+          continue;
+        }
+        this.printGridFrame(player, y, this.model.cheat);
+      }
+      System.out.println();
+    }
+
+    System.out.println();
+
+    this.printGridName(currentGame.getCurrentPlayer());
+    for (Player player : currentGame.getPlayers()) {
+      if (player == currentGame.getCurrentPlayer()) {
+        continue;
+      }
+      this.printGridName(player);
+    }
+    System.out.println();
+    System.out.println();
+    System.out.println(
+      "Legende: '" + TerritoryGrid.WATER + "': vide, '"
+        + TerritoryGrid.SHOT_WATER + "': dans l'eau, '"
+        + TerritoryGrid.BOAT + "': bateau, '"
+        + TerritoryGrid.SHOT_BOAT + "': touche, '"
+        + TerritoryGrid.SUNK_BOAT + "': coule"
+    );
+  }
+
+  /**
+   * Prints an horizontal line of a specific grid.
+   *
+   * @param player  The player associated with the grid
+   * @param y       The line number
+   * @param visible Defines if all the boats should be displayed
+   */
+  private void printGridFrame(Player player, int y, boolean visible) {
+    TerritoryGrid grid = this.grids.get(player);
+    boolean dead = !this.model.getCurrentGame().isPlayerAlive(player);
+    // Enforce 2 characters wide line number.
+    if (y + 1 < 10) {
+      System.out.print(" " + (y + 1));
+    } else {
+      System.out.print(y + 1);
+    }
+    System.out.print(spacer);
+
+    for (int x = 0; x < grid.getWidth(); x++) {
+      if (dead && (x == y || x + y == grid.getWidth() - 1)) {
+        System.out.print("@" + spacer);
+      } else if (visible) {
+        System.out.print(grid.visibleGrid[y][x] + spacer);
+      } else {
+        System.out.print(grid.hiddenGrid[y][x] + spacer);
+      }
+    }
+    System.out.print(spacer);
+  }
+
+  /**
+   * Prints the name corresponding to a grid.
+   *
+   * @param player The player associated with the grid
+   */
+  private void printGridName(Player player) {
+    TerritoryGrid grid = this.grids.get(player);
+    int gridTotalWidth = 2 + spacer.length() + (1 + spacer.length()) * grid.getWidth();
+    String gridName = player.getName();
+    if (!this.model.getCurrentGame().isPlayerAlive(player)) {
+      gridName = "[MORT] " + gridName;
+    } else {
+      gridName = "[" + this.model.getCurrentGame().getPlayers().indexOf(player) + "] " + gridName;
+    }
+
+    int gridNamePadding = 4;
+    if (gridName.length() > (gridTotalWidth - gridNamePadding)) {
+      gridName = gridName.substring(0, gridTotalWidth - (gridNamePadding + 3)) + "...";
+    }
+    int gridNameSpacer = (gridTotalWidth - gridName.length()) / 2;
+    for (int x = 0; x < gridTotalWidth; x++) {
+      if (x < gridNameSpacer) {
+        System.out.print(" ");
+        continue;
+      }
+      if ((x - gridNameSpacer) < gridName.length()) {
+        System.out.print(gridName.charAt(x - gridNameSpacer));
+      } else {
+        System.out.print(" ");
+      }
+    }
+    System.out.print(spacer);
+  }
+
+  private void printPlayingGame() {
+    this.clear();
+    this.printGrids();
+    System.out.println();
+    System.out.println("Au tour de " + this.model.getCurrentGame().getCurrentPlayer().getName());
+    System.out.println();
+    if (this.model.getCurrentGame().getAlivePlayers().size() == 2) {
+      System.out.println("Entrez les coordonnees pour tirer (A1) :");
+    } else {
+      System.out.println(
+        "Entrez le numero ou le nom d'un adversaire ainsi que les coordonnees pour tirer (bob A1) :"
+      );
+    }
+  }
+
+  private void handlePlayingGame(String input) {
+    Game currentGame = this.model.getCurrentGame();
+    String[] inputs = input.trim().split(" ");
+    if (inputs.length == 0) {
+      return;
+    }
+    String point;
+    Player targetedPlayer = null;
+
+    // Determines the targeted player.
+    // If there are only 2 remaining players, chooses automatically.
+    if (currentGame.getAlivePlayers().size() == 2) {
+      if (inputs.length > 2) {
+        System.out.println("Trop de choses donnees");
+        return;
+      }
+      for (Player player : currentGame.getAlivePlayers()) {
+        if (player != currentGame.getCurrentPlayer()) {
+          targetedPlayer = player;
+        }
+      }
+      point = inputs[inputs.length == 1 ? 0 : 1];
+    } else { // If there are more than 2 remaining players, parses the provided input.
+      if (inputs.length != 2) {
+        System.out.println("Il faut indiquer deux choses");
+        return;
+      }
+      try {
+        try {
+          targetedPlayer = currentGame.getPlayers().get(Integer.parseInt(inputs[0]));
+        } catch (NumberFormatException e) {
+          targetedPlayer = currentGame.getPlayer(inputs[0]);
+        }
+      } catch (Exception e) {
+        System.out.println("Ce joueur n'existe pas");
+        return;
+      }
+
+      if (targetedPlayer == currentGame.getCurrentPlayer()) {
+        System.out.println("Ne vous tirez pas dessus voyons");
+        return;
+      }
+      if (!currentGame.isPlayerAlive(targetedPlayer)) {
+        System.out.println("Ce joueur est mort");
+        return;
+      }
+      point = inputs[1];
+    }
+
+    // Determines the shot point.
+    point = point.toUpperCase();
+    try {
+      int x;
+      int y;
+      // Tries letter first.
+      if (point.charAt(0) >= 'A') {
+        x = point.charAt(0) - 'A';
+        y = Integer.parseInt(point.substring(1)) - 1;
+      } else { // Tries letter second.
+        x = point.charAt(point.length() - 1) - 'A';
+        y = Integer.parseInt(point.substring(0, point.length() - 1)) - 1;
+      }
+      this.dispatchEvent(new ShootEvent(
+        targetedPlayer,
+        new Point(x, y)
+      ));
+    } catch (Exception e) {
+      System.out.println("Coordonnees incorrectes.");
+    }
+  }
+
+  private void printGameOver() {
+    this.clear();
+    this.printGrids();
+
+    System.out.println();
+    System.out.println("Victoire de " + this.model.getCurrentGame().getWinner().getName() + " !");
+    System.out.println("Faites 'entree' pour retourner au menu principal.");
   }
 }

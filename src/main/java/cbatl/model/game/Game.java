@@ -15,18 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- */
 public class Game extends EventTarget {
   private Integer currentPlayerIndex;
   private List<Player> players;
   private Map<String, Player> playerNames;
   private Map<Player, Territory> playerTerritoryMap;
 
-  /**
-   *
-   */
   public Game() {
     this.players = new ArrayList<>();
     this.playerNames = new HashMap<>();
@@ -34,16 +28,10 @@ public class Game extends EventTarget {
     this.currentPlayerIndex = 0;
   }
 
-  /**
-   * @return
-   */
   public List<Player> getPlayers() {
     return this.players;
   }
 
-  /**
-   * @return
-   */
   public Integer getPlayerCount() {
     return this.players.size();
   }
@@ -85,10 +73,6 @@ public class Game extends EventTarget {
     return this.playerNames.get(playerName);
   }
 
-  /**
-   * @param player
-   * @return
-   */
   public Territory getPlayerTerritory(Player player) {
     if (!this.hasPlayer(player)) {
       throw new IllegalArgumentException();
@@ -96,10 +80,6 @@ public class Game extends EventTarget {
     return this.playerTerritoryMap.get(player);
   }
 
-  /**
-   * @param player
-   * @return
-   */
   public Boolean isPlayerAlive(Player player) {
     if (!this.hasPlayer(player)) {
       return false;
@@ -113,9 +93,6 @@ public class Game extends EventTarget {
     return false;
   }
 
-  /**
-   * @return
-   */
   public List<Player> getAlivePlayers() {
     List<Player> players = new ArrayList<>();
     for (Player player : this.getPlayers()) {
@@ -126,23 +103,14 @@ public class Game extends EventTarget {
     return players;
   }
 
-  /**
-   * @return
-   */
   public Integer getAlivePlayerCount() {
     return this.getAlivePlayers().size();
   }
 
-  /**
-   * @return
-   */
   public Integer getCurrentPlayerIndex() {
     return this.currentPlayerIndex;
   }
 
-  /**
-   * @return
-   */
   public Player getCurrentPlayer() {
     return this.getAlivePlayers().get(this.getCurrentPlayerIndex());
   }
@@ -164,9 +132,6 @@ public class Game extends EventTarget {
     return this.getCurrentPlayer();
   }
 
-  /**
-   *
-   */
   public void shoot(Player targetedPlayer, Point shot) {
     if (this.isOver()) {
       throw new IllegalStateException();
@@ -177,10 +142,12 @@ public class Game extends EventTarget {
     this.dispatchEvent(new CurrentPlayerShotEvent(targetedPlayer, shot));
     this.getPlayerTerritory(targetedPlayer).receiveShot(shot);
     if (!this.isPlayerAlive(targetedPlayer)) {
+      this.currentPlayerIndex--;
       this.dispatchEvent(new PlayerDiedEvent(targetedPlayer));
     }
 
     if (this.isOver()) {
+      this.currentPlayerIndex = 0;
       this.getWinner().incrementScore();
       this.dispatchEvent(new GameOverEvent());
       return;

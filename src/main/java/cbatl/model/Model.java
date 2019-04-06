@@ -16,14 +16,13 @@ public class Model extends EventTarget {
 
   private Game currentGame;
   private State currentState;
-  /**
-   *
-   */
   public final PlayerManager playerManager;
+  public final Boolean cheat;
 
-  public Model(PlayerManager playerManager) {
+  public Model(PlayerManager playerManager, Boolean cheat) {
     this.setCurrentState(State.MAIN_MENU);
     this.playerManager = playerManager;
+    this.cheat = cheat;
   }
 
   public Game getCurrentGame() {
