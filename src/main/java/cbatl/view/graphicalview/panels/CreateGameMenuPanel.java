@@ -21,8 +21,7 @@ public class CreateGameMenuPanel extends Panel {
     JButton play = new JButton("Lancer");
     play.addActionListener(e -> {
       List<Player> players = new ArrayList<>();
-      players.add((Player) model.playerManager.getPlayers().toArray()[0]);
-      this.dispatchEvent(new PlayGameEvent(players));
+      //this.dispatchEvent(new PlayGameEvent(players));
     });
     this.add(play);
   }

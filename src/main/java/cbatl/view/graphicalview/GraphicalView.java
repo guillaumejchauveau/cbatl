@@ -80,8 +80,6 @@ public class GraphicalView extends View {
         break;
       case CREATING_GAME:
         this.frame.setContentPane(this.createGameMenuPanel);
-        List<Player> players = new ArrayList<>();
-        players.add((Player) model.playerManager.getPlayers().toArray()[0]);
         break;
       case PLAYING_GAME:
         PlayingGameMenuPanel playingGameMenuPanel = new PlayingGameMenuPanel(model);
