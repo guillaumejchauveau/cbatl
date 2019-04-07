@@ -79,8 +79,6 @@ public class Controller {
 
     // In-game events.
     view.addEventListener(ShootEvent.class, event -> {
-      System.out.println(event.shot.x);
-      System.out.println(event.shot.y);
       if (this.model.getCurrentState() == Model.State.PLAYING_GAME) {
         this.model.getCurrentGame().shoot(event.targetedPlayer, event.shot);
       }

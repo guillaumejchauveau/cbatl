@@ -58,5 +58,6 @@ public class PlayingGameMenuPanel extends Panel {
       playerPanel.setClickable(this.currentGame.isPlayerAlive(player));
       this.panel.add(playerPanel);
     }
+    this.revalidate();
   }
 }
