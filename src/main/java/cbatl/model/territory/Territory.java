@@ -38,6 +38,10 @@ public class Territory extends EventTarget {
    * Automatically generates boats for the territory based on rules.
    */
   public void generateFleet() {
+    /*this.addBoat(new Boat(new Point(0, 0), 3, Boat.Orientation.NORTH));
+    this.addBoat(new Boat(new Point(5, 0), 3, Boat.Orientation.EAST));
+    this.addBoat(new Boat(new Point(5, 5), 3, Boat.Orientation.SOUTH));
+    this.addBoat(new Boat(new Point(0, 5), 3, Boat.Orientation.WEST));*/
     Random random = new Random();
 
     for (Integer boatType : Territory.BOATS_RULE) {
