@@ -11,6 +11,7 @@ public class Model extends EventTarget {
   public final Boolean cheat;
   private Game currentGame;
   private State currentState;
+
   public Model(PlayerManager playerManager, Boolean cheat) {
     this.setCurrentState(State.MAIN_MENU);
     this.playerManager = playerManager;

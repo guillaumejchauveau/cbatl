@@ -1,5 +1,6 @@
 package cbatl.model.territory;
 
+import cbatl.model.ModelException;
 import cbatl.model.events.territory.BoatSankEvent;
 import cbatl.model.events.territory.BoatShotEvent;
 import events.EventTarget;
@@ -39,9 +40,9 @@ public class Boat extends EventTarget {
     return this.orientation;
   }
 
-  public Point translateSectionToPoint(Integer section) {
+  public Point translateSectionToPoint(Integer section) throws ModelException {
     if (section < 0 || section >= this.getLength()) {
-      throw new IllegalArgumentException("Section number is illegal");
+      throw new ModelException("Section number is illegal");
     }
 
     int xOffset = 0;
@@ -64,7 +65,7 @@ public class Boat extends EventTarget {
     return new Point(bow.x + xOffset * section, bow.y + yOffset * section);
   }
 
-  public Integer translatePointToSection(Point point) {
+  public Integer translatePointToSection(Point point) throws ModelException {
     int xDelta = this.getBow().xDelta(point);
     int yDelta = this.getBow().yDelta(point);
     Integer section = null;
@@ -83,7 +84,7 @@ public class Boat extends EventTarget {
         break;
     }
     if (section < 0 || section >= this.getLength()) {
-      throw new IllegalArgumentException("Section point is illegal");
+      throw new ModelException("Section point is illegal");
     }
     return section;
   }
@@ -96,7 +97,7 @@ public class Boat extends EventTarget {
     return sections;
   }
 
-  public Collection<Point> getSectionsPoints() {
+  public Collection<Point> getSectionsPoints() throws ModelException {
     Collection<Point> points = new ArrayList<>();
     for (Integer section : this.getSections()) {
       points.add(this.translateSectionToPoint(section));
@@ -108,7 +109,7 @@ public class Boat extends EventTarget {
     return this.shotSections;
   }
 
-  public Collection<Point> getShotSectionsPoints() {
+  public Collection<Point> getShotSectionsPoints() throws ModelException {
     Collection<Point> points = new ArrayList<>();
     for (Integer section : this.getShotSections()) {
       points.add(this.translateSectionToPoint(section));
@@ -120,9 +121,9 @@ public class Boat extends EventTarget {
     return this.getShotSections().size() == this.getLength();
   }
 
-  public void addShotSection(Integer section) {
+  public void addShotSection(Integer section) throws ModelException {
     if (section < 0 || section >= this.getLength()) {
-      throw new IllegalArgumentException("Section number is illegal");
+      throw new ModelException("Section number is illegal");
     }
     this.shotSections.add(section);
     this.dispatchEvent(new BoatShotEvent(section));

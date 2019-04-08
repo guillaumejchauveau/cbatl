@@ -95,5 +95,6 @@ public class GraphicalView extends View {
         break;
     }
     this.frame.revalidate();
+    this.frame.repaint();
   }
 }

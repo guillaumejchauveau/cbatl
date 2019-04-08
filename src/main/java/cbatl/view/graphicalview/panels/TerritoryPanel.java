@@ -1,5 +1,6 @@
 package cbatl.view.graphicalview.panels;
 
+import cbatl.model.ModelException;
 import cbatl.model.events.game.PlayerDiedEvent;
 import cbatl.model.events.territory.TerritoryReceivedShotEvent;
 import cbatl.model.game.Game;
@@ -29,7 +30,7 @@ public class TerritoryPanel extends Panel {
   private Collection<BoatComponent> boats;
   private JPanel grid;
 
-  TerritoryPanel(Game game, Player player) {
+  TerritoryPanel(Game game, Player player) throws ModelException {
     Territory territory = game.getPlayerTerritory(player);
     this.boats = new ArrayList<>();
 
@@ -50,7 +51,11 @@ public class TerritoryPanel extends Panel {
         this.buttonGrid.add(button);
 
         button.addActionListener(e -> {
-          this.dispatchEvent(new ShootEvent(player, button.point));
+          try {
+            this.dispatchEvent(new ShootEvent(player, button.point));
+          } catch (IllegalArgumentException ec) {
+            throw new RuntimeException(ec);
+          }
         });
       }
     }
@@ -123,6 +128,7 @@ public class TerritoryPanel extends Panel {
       this.grid.add(shotC);
       this.grid.setComponentZOrder(shotC, 1);
       this.grid.revalidate();
+      this.grid.repaint();
     });
   }
 

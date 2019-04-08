@@ -1,5 +1,6 @@
 package cbatl.view.terminalview;
 
+import cbatl.model.ModelException;
 import cbatl.model.events.territory.TerritoryReceivedShotEvent;
 import cbatl.model.territory.Boat;
 import cbatl.model.territory.Point;
@@ -73,15 +74,19 @@ class TerritoryGrid {
       this.markShotWater(point);
     }
 
-    for (Boat boat : this.territory.getBoats()) {
-      if (boat.isSunk()) {
-        this.markSunkBoat(boat);
-      } else {
-        this.markBoat(boat);
-        for (Point point : boat.getShotSectionsPoints()) {
-          this.markShotSection(point);
+    try {
+      for (Boat boat : this.territory.getBoats()) {
+        if (boat.isSunk()) {
+          this.markSunkBoat(boat);
+        } else {
+          this.markBoat(boat);
+          for (Point point : boat.getShotSectionsPoints()) {
+            this.markShotSection(point);
+          }
         }
       }
+    } catch (ModelException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -101,8 +106,12 @@ class TerritoryGrid {
    * @param boat The boat
    */
   private void markBoat(Boat boat) {
-    for (Point point : boat.getSectionsPoints()) {
-      this.visibleGrid[point.y][point.x] = TerritoryGrid.BOAT;
+    try {
+      for (Point point : boat.getSectionsPoints()) {
+        this.visibleGrid[point.y][point.x] = TerritoryGrid.BOAT;
+      }
+    } catch (ModelException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -122,9 +131,13 @@ class TerritoryGrid {
    * @param boat The boat
    */
   private void markSunkBoat(Boat boat) {
-    for (Point point : boat.getSectionsPoints()) {
-      this.hiddenGrid[point.y][point.x] = TerritoryGrid.SUNK_BOAT;
-      this.visibleGrid[point.y][point.x] = TerritoryGrid.SUNK_BOAT;
+    try {
+      for (Point point : boat.getSectionsPoints()) {
+        this.hiddenGrid[point.y][point.x] = TerritoryGrid.SUNK_BOAT;
+        this.visibleGrid[point.y][point.x] = TerritoryGrid.SUNK_BOAT;
+      }
+    } catch (ModelException e) {
+      throw new RuntimeException(e);
     }
   }
 }

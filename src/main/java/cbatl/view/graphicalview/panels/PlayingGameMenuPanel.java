@@ -1,6 +1,7 @@
 package cbatl.view.graphicalview.panels;
 
 import cbatl.model.Model;
+import cbatl.model.ModelException;
 import cbatl.model.events.game.CurrentPlayerChangedEvent;
 import cbatl.model.game.Game;
 import cbatl.model.player.Player;
@@ -27,10 +28,14 @@ public class PlayingGameMenuPanel extends Panel {
     this.setLayout(new BorderLayout());
     this.add(new JScrollPane(this.panel), BorderLayout.CENTER);
 
-    for (Player player : currentGame.getPlayers()) {
-      TerritoryPanel territoryPanel = new TerritoryPanel(currentGame, player);
-      territoryPanel.addEventListener(this::dispatchEvent);
-      this.territoryPanels.put(player, territoryPanel);
+    try {
+      for (Player player : currentGame.getPlayers()) {
+        TerritoryPanel territoryPanel = new TerritoryPanel(currentGame, player);
+        territoryPanel.addEventListener(this::dispatchEvent);
+        this.territoryPanels.put(player, territoryPanel);
+      }
+    } catch (ModelException e) {
+      throw new RuntimeException(e);
     }
     this.placeTerritories();
 
@@ -49,15 +54,20 @@ public class PlayingGameMenuPanel extends Panel {
     currentPlayerPanel.setClickable(false);
     this.panel.add(currentPlayerPanel);
 
-    for (Player player : this.currentGame.getPlayers()) {
-      if (player == this.currentGame.getCurrentPlayer()) {
-        continue;
+    try {
+      for (Player player : this.currentGame.getPlayers()) {
+        if (player == this.currentGame.getCurrentPlayer()) {
+          continue;
+        }
+        TerritoryPanel playerPanel = this.territoryPanels.get(player);
+        playerPanel.setBoatsVisible(this.model.cheat);
+        playerPanel.setClickable(this.currentGame.isPlayerAlive(player));
+        this.panel.add(playerPanel);
       }
-      TerritoryPanel playerPanel = this.territoryPanels.get(player);
-      playerPanel.setBoatsVisible(this.model.cheat);
-      playerPanel.setClickable(this.currentGame.isPlayerAlive(player));
-      this.panel.add(playerPanel);
+    } catch (ModelException e) {
+      throw new RuntimeException(e);
     }
     this.revalidate();
+    this.repaint();
   }
 }

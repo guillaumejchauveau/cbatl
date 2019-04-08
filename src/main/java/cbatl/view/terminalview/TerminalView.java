@@ -1,6 +1,7 @@
 package cbatl.view.terminalview;
 
 import cbatl.model.Model;
+import cbatl.model.ModelException;
 import cbatl.model.events.StateChangedEvent;
 import cbatl.model.events.game.CurrentPlayerChangedEvent;
 import cbatl.model.game.Game;
@@ -51,30 +52,43 @@ public class TerminalView extends View {
    * State change callback. Delegates to specialized methods for each state.
    */
   private void updateState() {
-    switch (this.model.getCurrentState()) {
-      case MAIN_MENU:
-        printMainMenu();
-        break;
-      case CREATING_GAME:
-        printCreateGameMenu();
-        break;
-      case PLAYING_GAME:
-        Game currentGame = this.model.getCurrentGame();
+    try {
 
-        this.grids = new HashMap<>();
-        for (Player player : currentGame.getPlayers()) {
-          Territory territory = currentGame.getPlayerTerritory(player);
-          this.grids.put(player, new TerritoryGrid(territory));
-        }
+      switch (this.model.getCurrentState()) {
+        case MAIN_MENU:
+          printMainMenu();
+          break;
+        case CREATING_GAME:
+          printCreateGameMenu();
+          break;
+        case PLAYING_GAME:
+          Game currentGame = this.model.getCurrentGame();
 
-        currentGame.addEventListener(CurrentPlayerChangedEvent.class, event -> {
+          this.grids = new HashMap<>();
+          try {
+            for (Player player : currentGame.getPlayers()) {
+              Territory territory = currentGame.getPlayerTerritory(player);
+              this.grids.put(player, new TerritoryGrid(territory));
+            }
+          } catch (ModelException e) {
+            throw new RuntimeException(e);
+          }
+
+          currentGame.addEventListener(CurrentPlayerChangedEvent.class, event -> {
+            try {
+              printPlayingGame();
+            } catch (ModelException e) {
+              throw new RuntimeException(e);
+            }
+          });
           printPlayingGame();
-        });
-        printPlayingGame();
-        break;
-      case GAME_OVER:
-        printGameOver();
-        break;
+          break;
+        case GAME_OVER:
+          printGameOver();
+          break;
+      }
+    } catch (ModelException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -153,19 +167,32 @@ public class TerminalView extends View {
       }
       Player player;
       if (this.model.playerManager.hasPlayer(playerName)) {
-        player = this.model.playerManager.getPlayer(playerName);
+        try {
+          player = this.model.playerManager.getPlayer(playerName);
+        } catch (ModelException e) {
+          throw new RuntimeException(e);
+        }
       } else {
-        player = new Player(playerName);
+        try {
+          player = new Player(playerName);
+        } catch (ModelException e) {
+          System.out.println("Le nom de joueur '" + playerName + "' est incorrect");
+          return;
+        }
       }
       players.add(player);
     }
-    this.dispatchEvent(new PlayGameEvent(players));
+    try {
+      this.dispatchEvent(new PlayGameEvent(players));
+    } catch (IllegalArgumentException e) {
+      System.out.println("Les joueurs indiques sont incorrects");
+    }
   }
 
   /**
    * Prints the current game's grids.
    */
-  private void printGrids() {
+  private void printGrids() throws ModelException {
     int maxGridHeight = 0;
 
     Game currentGame = this.model.getCurrentGame();
@@ -225,7 +252,7 @@ public class TerminalView extends View {
    * @param y       The line number
    * @param visible Defines if all the boats should be displayed
    */
-  private void printGridFrame(Player player, int y, boolean visible) {
+  private void printGridFrame(Player player, int y, boolean visible) throws ModelException {
     TerritoryGrid grid = this.grids.get(player);
     boolean dead = !this.model.getCurrentGame().isPlayerAlive(player);
     // Enforce 2 characters wide line number.
@@ -253,7 +280,7 @@ public class TerminalView extends View {
    *
    * @param player The player associated with the grid
    */
-  private void printGridName(Player player) {
+  private void printGridName(Player player) throws ModelException {
     TerritoryGrid grid = this.grids.get(player);
     int gridTotalWidth = 2 + spacer.length() + (1 + spacer.length()) * grid.getWidth();
     String gridName = player.getName();
@@ -282,7 +309,7 @@ public class TerminalView extends View {
     System.out.print(spacer);
   }
 
-  private void printPlayingGame() {
+  private void printPlayingGame() throws ModelException {
     this.clear();
     this.printGrids();
     System.out.println();
@@ -339,9 +366,13 @@ public class TerminalView extends View {
         System.out.println("Ne vous tirez pas dessus voyons");
         return;
       }
-      if (!currentGame.isPlayerAlive(targetedPlayer)) {
-        System.out.println("Ce joueur est mort");
-        return;
+      try {
+        if (!currentGame.isPlayerAlive(targetedPlayer)) {
+          System.out.println("Ce joueur est mort");
+          return;
+        }
+      } catch (ModelException e) {
+        throw new RuntimeException(e);
       }
       point = inputs[1];
     }
@@ -368,7 +399,7 @@ public class TerminalView extends View {
     }
   }
 
-  private void printGameOver() {
+  private void printGameOver() throws ModelException {
     this.clear();
     this.printGrids();
 
