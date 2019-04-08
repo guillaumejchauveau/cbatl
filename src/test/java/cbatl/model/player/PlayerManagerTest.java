@@ -1,5 +1,6 @@
 package cbatl.model.player;
 
+import cbatl.model.ModelException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -9,7 +10,7 @@ import org.junit.Test;
 
 public class PlayerManagerTest {
   @Test
-  public void registry() {
+  public void registry() throws ModelException {
     PlayerManager pm = new PlayerManager();
     Player player = new Player("A");
     pm.registerPlayer(player);
@@ -22,7 +23,7 @@ public class PlayerManagerTest {
   }
 
   @Test
-  public void save() throws IOException {
+  public void save() throws IOException, ModelException {
     File saveFile = new File("saveFile");
     PlayerManager pm = new PlayerManager();
     pm.registerPlayer(new Player("Player"));

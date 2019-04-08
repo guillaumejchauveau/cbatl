@@ -1,5 +1,6 @@
 package cbatl.model.player;
 
+import cbatl.model.ModelException;
 import cbatl.model.game.Game;
 import cbatl.model.territory.Point;
 import cbatl.model.territory.Territory;
@@ -9,14 +10,14 @@ public class RandomPlayer extends Player {
   public static final String BOT_NAME = "BOT";
   private Random random;
 
-  public RandomPlayer() {
+  public RandomPlayer() throws ModelException {
     super(BOT_NAME);
     this.random = new Random();
   }
 
-  public Object[] chooseShot(Game game) {
+  public Object[] chooseShot(Game game) throws ModelException {
     if (game.isOver() || !game.isPlayerAlive(this)) {
-      throw new IllegalStateException("Random player cannot play");
+      throw new ModelException("Random player cannot play");
     }
 
     Player targetedPlayer;

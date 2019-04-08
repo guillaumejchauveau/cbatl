@@ -1,5 +1,6 @@
 package cbatl.model.territory;
 
+import cbatl.model.ModelException;
 import cbatl.model.events.territory.TerritoryReceivedShotEvent;
 import events.EventTarget;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class Territory extends EventTarget {
     this.receivedShots = new ArrayList<>();
   }
 
-  private Boolean collision(Boat newBoat) {
+  private Boolean collision(Boat newBoat) throws ModelException {
     for (Boat existingBoat : this.getBoats()) {
       for (Point point : newBoat.getSectionsPoints()) {
         if (existingBoat.getSectionsPoints().contains(point)) {
@@ -37,7 +38,7 @@ public class Territory extends EventTarget {
   /**
    * Automatically generates boats for the territory based on rules.
    */
-  public void generateFleet() {
+  public void generateFleet() throws ModelException {
     Random random = new Random();
 
     for (Integer boatType : Territory.BOATS_RULE) {
@@ -86,12 +87,12 @@ public class Territory extends EventTarget {
     return this.receivedShots;
   }
 
-  public void addBoat(Boat boat) {
+  public void addBoat(Boat boat) throws ModelException {
     if (
       !this.isPointInTerritory(boat.getBow()) ||
         !this.isPointInTerritory(boat.translateSectionToPoint(boat.getLength() - 1))
     ) {
-      throw new IllegalArgumentException("Boat is not in territory");
+      throw new ModelException("Boat is not in territory");
     }
     this.boats.add(boat);
   }
@@ -102,9 +103,9 @@ public class Territory extends EventTarget {
    * @param shot The shot
    * @return The boat shot if any
    */
-  public Boat receiveShot(Point shot) {
+  public Boat receiveShot(Point shot) throws ModelException {
     if (!this.isPointInTerritory(shot)) {
-      throw new IllegalArgumentException("Shot is not in territory");
+      throw new ModelException("Shot is not in territory");
     }
     Boat shotBoat = null;
 

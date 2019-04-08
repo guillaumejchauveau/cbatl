@@ -4,6 +4,7 @@
 # Ignore Gradle build output directory
 build
 
-livraison
-!livraison/rapport/*.pdf
-/players.csv
+livraison/*
+!livraison/rapport
+!/livraison/README.txt
+players.csv

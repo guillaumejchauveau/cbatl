@@ -1,6 +1,7 @@
 package cbatl.controller;
 
 import cbatl.model.Model;
+import cbatl.model.ModelException;
 import cbatl.model.game.Game;
 import cbatl.model.player.Player;
 import cbatl.model.player.PlayerManager;
@@ -36,9 +37,9 @@ public class Controller {
     try {
       this.playerFile.createNewFile();
       this.playerManager = PlayerManager.createFromFile(new FileReader(this.playerFile));
-    } catch (IOException | IllegalStateException | IllegalArgumentException e) {
+    } catch (IOException | IllegalStateException | IllegalArgumentException | ModelException e) {
       System.out.println("Attention: la tentative de chargement du fichier de sauvegarde a " +
-        "échouée.");
+        "echouee.");
       this.playerManager = new PlayerManager();
     }
     this.model = new Model(this.playerManager, cheat);
@@ -61,17 +62,33 @@ public class Controller {
         Game game = new Game();
         for (Player player : event.players) {
           Territory territory = new Territory();
-          territory.generateFleet();
-          game.addPlayer(player, territory);
-          if (!this.playerManager.hasPlayer(player)) {
-            this.playerManager.registerPlayer(player);
+          try {
+            territory.generateFleet();
+          } catch (ModelException e) {
+            throw new RuntimeException(e);
+          }
+          try {
+            game.addPlayer(player, territory);
+          } catch (ModelException e) {
+            throw new IllegalArgumentException(e);
+          }
+          try {
+            if (!this.playerManager.hasPlayer(player)) {
+              this.playerManager.registerPlayer(player);
+            }
+          } catch (ModelException e) {
+            throw new RuntimeException(e);
           }
         }
 
         if (game.getPlayerCount() < 2) {
           Territory territory = new Territory();
-          territory.generateFleet();
-          game.addPlayer(new RandomPlayer(), territory);
+          try {
+            territory.generateFleet();
+            game.addPlayer(new RandomPlayer(), territory);
+          } catch (ModelException e) {
+            throw new RuntimeException(e);
+          }
         }
         this.model.playGame(game);
       }
@@ -80,7 +97,11 @@ public class Controller {
     // In-game events.
     view.addEventListener(ShootEvent.class, event -> {
       if (this.model.getCurrentState() == Model.State.PLAYING_GAME) {
-        this.model.getCurrentGame().shoot(event.targetedPlayer, event.shot);
+        try {
+          this.model.getCurrentGame().shoot(event.targetedPlayer, event.shot);
+        } catch (ModelException e) {
+          throw new IllegalArgumentException(e);
+        }
       }
     });
 
@@ -92,7 +113,7 @@ public class Controller {
       try {
         playerManager.saveToFile(new FileWriter(this.playerFile));
       } catch (IOException | IllegalStateException | IllegalArgumentException e) {
-        System.out.println("Attention: la tentative de sauvegarde a échouée.");
+        System.out.println("Attention: la tentative de sauvegarde a echouee.");
       }
       System.exit(0);
     });

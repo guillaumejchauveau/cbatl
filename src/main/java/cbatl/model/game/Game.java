@@ -1,5 +1,6 @@
 package cbatl.model.game;
 
+import cbatl.model.ModelException;
 import cbatl.model.events.game.CurrentPlayerChangedEvent;
 import cbatl.model.events.game.CurrentPlayerShotEvent;
 import cbatl.model.events.game.GameOverEvent;
@@ -49,20 +50,21 @@ public class Game extends EventTarget {
   /**
    * Involves a player in the game.
    *
-   * @param player The player to involve
+   * @param player    The player to involve
+   * @param territory The territory associated with the player
    */
-  public void addPlayer(Player player, Territory territory) {
+  public void addPlayer(Player player, Territory territory) throws ModelException {
     if (player == null || territory == null) {
-      throw new IllegalArgumentException("Player or territory is null");
+      throw new ModelException("Player or territory is null");
     }
     if (this.getPlayerCount() == 0 && player instanceof RandomPlayer) {
-      throw new IllegalArgumentException("First player cannot be a random player");
+      throw new ModelException("First player cannot be a random player");
     }
     if (this.hasPlayer(player)) {
-      throw new IllegalArgumentException("Duplicate player");
+      throw new ModelException("Duplicate player");
     }
     if (this.playerTerritoryMap.containsValue(territory)) {
-      throw new IllegalArgumentException("Duplicate territory");
+      throw new ModelException("Duplicate territory");
     }
     this.players.add(player);
     this.playerNames.put(player.getName(), player);
@@ -73,14 +75,14 @@ public class Game extends EventTarget {
     return this.playerNames.get(playerName);
   }
 
-  public Territory getPlayerTerritory(Player player) {
+  public Territory getPlayerTerritory(Player player) throws ModelException {
     if (!this.hasPlayer(player)) {
-      throw new IllegalArgumentException();
+      throw new ModelException("Unknown player");
     }
     return this.playerTerritoryMap.get(player);
   }
 
-  public Boolean isPlayerAlive(Player player) {
+  public Boolean isPlayerAlive(Player player) throws ModelException {
     if (!this.hasPlayer(player)) {
       return false;
     }
@@ -95,10 +97,14 @@ public class Game extends EventTarget {
 
   public List<Player> getAlivePlayers() {
     List<Player> players = new ArrayList<>();
-    for (Player player : this.getPlayers()) {
-      if (this.isPlayerAlive(player)) {
-        players.add(player);
+    try {
+      for (Player player : this.getPlayers()) {
+        if (this.isPlayerAlive(player)) {
+          players.add(player);
+        }
       }
+    } catch (ModelException e) {
+      throw new RuntimeException(e);
     }
     return players;
   }
@@ -132,12 +138,9 @@ public class Game extends EventTarget {
     return this.getCurrentPlayer();
   }
 
-  public void shoot(Player targetedPlayer, Point shot) {
+  public void shoot(Player targetedPlayer, Point shot) throws ModelException {
     if (this.isOver()) {
-      throw new IllegalStateException();
-    }
-    if (!this.isPlayerAlive(targetedPlayer)) {
-      throw new IllegalArgumentException();
+      throw new ModelException("Game is over");
     }
     this.dispatchEvent(new CurrentPlayerShotEvent(targetedPlayer, shot));
     this.getPlayerTerritory(targetedPlayer).receiveShot(shot);
