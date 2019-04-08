@@ -13,7 +13,6 @@ public class App {
     try {
       controller.attachView(new GraphicalView());
     } catch (HeadlessException e) {
-      System.out.println("Erreur lors dans la vue graphique : ");
       System.out.println(e);
     }
     controller.attachView(new TerminalView());

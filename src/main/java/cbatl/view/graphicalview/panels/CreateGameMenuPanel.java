@@ -69,7 +69,11 @@ public class CreateGameMenuPanel extends Panel {
 
     JButton play = new JButton("Lancer");
     play.addActionListener(e -> {
-      this.dispatchEvent(new PlayGameEvent(selectedPlayersListModel.getSelectedPlayers()));
+      try {
+        this.dispatchEvent(new PlayGameEvent(selectedPlayersListModel.getSelectedPlayers()));
+      } catch (IllegalArgumentException ec) {
+        throw new RuntimeException(ec);
+      }
     });
 
     int width = 400;
