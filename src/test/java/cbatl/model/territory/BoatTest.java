@@ -1,12 +1,13 @@
 package cbatl.model.territory;
 
+import cbatl.model.ModelException;
 import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class BoatTest {
   @Test
-  public void sections() {
+  public void sections() throws ModelException {
     Point head = new Point(0, 0);
     Integer length = 3;
     Boat.Orientation orientation = Boat.Orientation.NORTH;

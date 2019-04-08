@@ -1,5 +1,6 @@
 package cbatl.model.game;
 
+import cbatl.model.ModelException;
 import cbatl.model.player.Player;
 import cbatl.model.player.RandomPlayer;
 import cbatl.model.territory.Boat;
@@ -10,7 +11,7 @@ import org.junit.Test;
 
 public class GameTest {
   @Test
-  public void playerTerritory() {
+  public void playerTerritory() throws ModelException {
     Game game = new Game();
 
     Territory t2 = new Territory();
@@ -31,7 +32,7 @@ public class GameTest {
   }
 
   @Test
-  public void randomPlayerHandling() {
+  public void randomPlayerHandling() throws ModelException {
     Game game = new Game();
     Player human = new Player("Human");
     Territory t1 = new Territory();
