@@ -1,8 +1,8 @@
 package cbatl;
 
 import cbatl.controller.Controller;
-import cbatl.view.terminalview.TerminalView;
 import cbatl.view.graphicalview.GraphicalView;
+import cbatl.view.terminalview.TerminalView;
 import java.awt.HeadlessException;
 import java.io.File;
 

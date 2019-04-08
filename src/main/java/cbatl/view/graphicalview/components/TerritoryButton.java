@@ -8,10 +8,10 @@ import java.awt.Graphics;
 import javax.swing.JButton;
 
 public class TerritoryButton extends JButton {
-  public Point point;
   private final static Color DEFAULT = new Color(0, 0, 0, 0);
   private final static Color HOVER = new Color(0, 0, 0, 40);
   private final static Color PRESSED = new Color(0, 0, 0, 60);
+  public Point point;
 
   public TerritoryButton(Point point) {
     this.point = point;

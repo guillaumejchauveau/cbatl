@@ -12,10 +12,9 @@ import javax.swing.JComponent;
  * Draws a boat.
  */
 public class BoatComponent extends JComponent {
+  final static Color SUNK = new Color(200, 52, 50);
   private final static Integer SIZE = 16;
   private final static Color DEFAULT = new Color(80, 80, 80);
-  final static Color SUNK = new Color(200, 52, 50);
-
   private Boat boat;
   private Boolean visible;
 

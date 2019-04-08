@@ -7,18 +7,10 @@ import cbatl.model.player.PlayerManager;
 import events.EventTarget;
 
 public class Model extends EventTarget {
-  public enum State {
-    MAIN_MENU,
-    CREATING_GAME,
-    PLAYING_GAME,
-    GAME_OVER
-  }
-
-  private Game currentGame;
-  private State currentState;
   public final PlayerManager playerManager;
   public final Boolean cheat;
-
+  private Game currentGame;
+  private State currentState;
   public Model(PlayerManager playerManager, Boolean cheat) {
     this.setCurrentState(State.MAIN_MENU);
     this.playerManager = playerManager;
@@ -46,5 +38,12 @@ public class Model extends EventTarget {
   public void setCurrentState(State state) {
     this.currentState = state;
     this.dispatchEvent(new StateChangedEvent());
+  }
+
+  public enum State {
+    MAIN_MENU,
+    CREATING_GAME,
+    PLAYING_GAME,
+    GAME_OVER
   }
 }

@@ -14,8 +14,6 @@ class TerritoryGrid {
   final static String BOAT = "+";
   final static String SHOT_BOAT = "!";
   final static String SUNK_BOAT = "x";
-
-  private Territory territory;
   /**
    * The grid only with shots (normal mode).
    */
@@ -24,6 +22,7 @@ class TerritoryGrid {
    * The grid with every boats (cheat mode).
    */
   final String[][] visibleGrid;
+  private Territory territory;
 
   TerritoryGrid(Territory territory) {
     this.territory = territory;

@@ -2,7 +2,6 @@ package cbatl.view.graphicalview.panels;
 
 import cbatl.model.Model;
 import cbatl.model.player.Player;
-import cbatl.view.events.PlayGameEvent;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;

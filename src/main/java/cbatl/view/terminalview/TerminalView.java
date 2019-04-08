@@ -22,9 +22,9 @@ import java.util.Scanner;
  * A view using standard input and output.
  */
 public class TerminalView extends View {
+  private final static String spacer = "  ";
   private Model model;
   private Map<Player, TerritoryGrid> grids;
-  private final static String spacer = "  ";
 
   public TerminalView() {
     Thread thread = new Thread(() -> {

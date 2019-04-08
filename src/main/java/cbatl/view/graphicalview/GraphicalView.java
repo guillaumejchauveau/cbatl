@@ -2,7 +2,6 @@ package cbatl.view.graphicalview;
 
 import cbatl.model.Model;
 import cbatl.model.events.StateChangedEvent;
-import cbatl.model.player.Player;
 import cbatl.view.View;
 import cbatl.view.events.ExitEvent;
 import cbatl.view.events.MainMenuEvent;
@@ -13,8 +12,6 @@ import cbatl.view.graphicalview.panels.PlayingGameMenuPanel;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
