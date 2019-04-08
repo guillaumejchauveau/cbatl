@@ -41,15 +41,14 @@ tasks.jar {
 }
 
 tasks.register<Copy>("livraison") {
-  dependsOn(tasks.withType<Javadoc>())
-  dependsOn(tasks.withType<Jar>())
+  dependsOn(tasks.withType<Javadoc>(), "installDist")
   from("src") {
     into("src")
   }
   from("build/docs/javadoc") {
     into("doc")
   }
-  from("build/libs") {
+  from("build/install/cbatl") {
     into("dist")
   }
   into("livraison")

@@ -50,7 +50,8 @@ public class Game extends EventTarget {
   /**
    * Involves a player in the game.
    *
-   * @param player The player to involve
+   * @param player    The player to involve
+   * @param territory The territory associated with the player
    */
   public void addPlayer(Player player, Territory territory) throws ModelException {
     if (player == null || territory == null) {
