@@ -9,7 +9,7 @@ import java.io.File;
 public class App {
   public static void main(String[] args) {
     File playerFile = new File("players.csv");
-    Controller controller = new Controller(playerFile, false);
+    Controller controller = new Controller(playerFile, args.length != 0);
     try {
       controller.attachView(new GraphicalView());
     } catch (HeadlessException e) {
