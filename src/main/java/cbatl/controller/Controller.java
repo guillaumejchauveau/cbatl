@@ -38,7 +38,7 @@ public class Controller {
       this.playerManager = PlayerManager.createFromFile(new FileReader(this.playerFile));
     } catch (IOException | IllegalStateException | IllegalArgumentException e) {
       System.out.println("Attention: la tentative de chargement du fichier de sauvegarde a " +
-        "échouée.");
+        "echouee.");
       this.playerManager = new PlayerManager();
     }
     this.model = new Model(this.playerManager, cheat);
@@ -92,7 +92,7 @@ public class Controller {
       try {
         playerManager.saveToFile(new FileWriter(this.playerFile));
       } catch (IOException | IllegalStateException | IllegalArgumentException e) {
-        System.out.println("Attention: la tentative de sauvegarde a échouée.");
+        System.out.println("Attention: la tentative de sauvegarde a echouee.");
       }
       System.exit(0);
     });
